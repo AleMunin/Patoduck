@@ -1,0 +1,6 @@
+
+# Set Up
+
+`sudo apt install python3.12-venv`
+
+`source Patoduck/bin/activate` 
