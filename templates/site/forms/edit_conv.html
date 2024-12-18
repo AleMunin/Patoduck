@@ -1,0 +1,75 @@
+{% extends 'base.html'%}
+<!-- The extend to home is temporary, something else when you need -->
+
+{% block layout %}
+ 
+    {% block content %}
+        <div class="all_container">
+
+            <div id="wrap_conv" class="wrapper">
+
+                <button
+                _="on click 
+                    toggle .hidden on #edit_mode_conv
+                    toggle .hidden on #read_mode_conv"
+                >
+                    Edit Conversation
+                </button>
+
+                <div id="read_mode_conv">
+
+                    {% include 'site/display/print_conv.html' %}
+
+                </div>
+
+                <div id="edit_mode_conv" class="hidden">
+                    {% include 'site/forms/form_edit_conv.html' %}
+                </div>
+            </div>
+        
+            
+            <div class = "speech_wrapper grid ">
+
+                <div class = "wrapper new_speech" >
+                    
+                    
+                    <h1> Add new speech </h1>
+                    
+                    <button
+                    _="on click toggle .hidden on #new_speech_form"
+                    > New Speech </button>
+                    
+                    {% include 'site/forms/create_speech.html' %}
+                    
+                    
+                </div>
+                
+                <div class = "wrapper all_speeches">
+                    
+                    <button
+                    _="on click toggle .hidden on #all_conv_wrapp"
+                    
+                    > Hide Conversation </button>
+                    
+                    <div id="all_conv_wrapp"
+                    class="wrapper">
+                    <!-- <h1>Here are all the speeches: </h1> -->
+                    
+                    {% for speech in speeches %}
+                    
+                    {% include 'site/htmx/single_speech.html'%}
+                    
+                    {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        
+    {% endblock %}
+    
+    
+{% endblock %}
+    
+    

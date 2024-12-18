@@ -1,0 +1,12 @@
+{% extends 'layouts/create.html' %}
+<!-- This is the page, it is separated this way because you can 
+    just render the form bellow on another page if you need.
+-->
+
+{% block content %}
+<h4> Create Character </h4>
+<p> Only admin can edit or delete characters for now </p>
+
+    {% include 'site/forms/char/form_create_char.html' %}
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html'%}
+<!-- The extend to home is temporary, something else when you need -->
+
+{% block layout %}
+<div>
+ 
+    {% block content %}
+
+    <h1> Here are all {{ total_loc }} the locations in the game</h1>
+
+
+
+    <ul>
+        {% for loc in all_loc %}
+        <li> {{ loc.name }} </li>
+        
+        {% endfor %}
+    </ul>
+
+
+    {% endblock %}
+
+</div>
+
+{% endblock %}
+

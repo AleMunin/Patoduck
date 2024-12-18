@@ -1,0 +1,43 @@
+<form method="POST">
+    
+    {% csrf_token %}
+    
+    {{ form.non_field_errors }}
+
+    <div class="field char_name">
+        {{ form.name.errors }}
+        <label>
+            Character Name: 
+        </label>
+        {{ form.name }}
+    </div>
+
+    <div class="field minor_stuff grid">
+        <div class="field char_walkable">
+            {{ form.walkable.errors }}
+            <label>
+                Walkable: 
+            </label>
+            {{ form.walkable }}
+        </div>
+        <div class="field char_portraits">
+            {{ form.portraits.errors }}
+            <label>
+                Nº of Portraits: 
+            </label>
+            {{ form.portraits }}
+        </div>
+
+
+        <div class="field published">
+            {{ form.published.errors }}
+            <label>
+                Published: 
+            </label>
+            {{ form.published }}
+        </div>
+    </div>
+
+    <button type="submit"> Submit Character</button>
+    <a href="{{  request.META.HTTP_REFERER }}">Cancel</a>
+</form>

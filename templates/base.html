@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+
+    {% include 'includes/head.html' %}
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
+    <h1>This is the ducking hub</h1>
+
+    {% block layout %}
+
+    {% endblock %}
+    
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!-- Shows only the text version of the conversation -->
+
+<div class="conversation">
+    <h4> {{ conv.title }} </h4>
+
+    <div class="grid">
+        <div>{{conv.is_quest}}</div>
+        <div>{{conv.is_cutscene}}</div>
+    </div>
+
+    <div>
+        <h6> Condition:</h6>
+        <p>{{ conv.condition }}</p>
+    </div>
+    <div>
+        <h6> Condition:</h6>
+        <p>{{ conv.description }}</p>
+    </div>
+</div>

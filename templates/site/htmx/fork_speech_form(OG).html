@@ -1,0 +1,95 @@
+<div id="">
+
+    <form 
+        class = "fork_form"
+        hx-post="{% url 'create_fork' speech.id %}"
+        hx-swap="outerHTML"    
+    >
+        {% csrf_token %}
+        {{ form }}
+        <!-- <button> Show one More Fork </button> -->
+
+
+        <button
+            class="send"> 
+            Save Changes
+        </button>
+    </form>
+</div>
+
+<!-- Buggy attempt that needs back up too: -->
+
+<div class="fork_wrapper">
+
+    <form 
+        hx-post="{% url 'create_fork' speech.id %}"
+        hx-swap="outerHTML"    
+        >
+        {% csrf_token %}
+        
+        <!-- <button> Show one More Fork </button> -->
+
+        <button
+            class="btn_show show_form"
+            _="on click 
+                toggle .hidden on the next <div/>
+                "
+            >
+            Show Next Fork
+        </button>
+
+        <div class="fork_set hidden">
+
+            
+            <fieldset class="field_en">
+                This is the English Field
+
+                <label>Fork Question (EN)</label>
+                {{ form.fork_question_en_A }}
+                
+            </fieldset>
+
+            <button 
+                class="btn_show show_pt"
+                _="on click toggle .hidden on the next .field_pt">
+                Show PT
+            </button>
+            <fieldset class="field_pt hidden">
+                This is the Portuguese field
+                <label>Fork Question (PT)</label>
+                {{ form.fork_question_pt_A }}
+            </fieldset>
+
+            <button 
+                class="btn_show show_es"
+                _="on click toggle .hidden on the next .field_es">
+                Show ES
+            </button>
+            <fieldset class="field_es hidden">
+                This is the Spanish Field
+                <label>Fork Question (ES)</label>
+                {{ form.fork_question_es_A }}
+            </fieldset>
+
+
+        </div>
+        
+
+        <button
+            class="btn_show show_form hidden"   
+        >
+            I'm the next show form
+        </button>
+
+        <div class="fork_set hidden">
+            I'm the next formset
+        </div>
+        
+
+
+        <button
+            class="send"> 
+            Save Changes
+        </button>
+    </form>
+</div>

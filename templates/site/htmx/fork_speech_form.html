@@ -1,0 +1,330 @@
+<section class="form_wrap">
+
+    <form 
+        class = "fork_form"
+        hx-post="{% url 'create_fork' speech.id %}"
+        hx-swap="outerHTML"    
+    >
+        {% csrf_token %}
+        
+        <!-- ------------------ FORK A --------------------------  -->
+        
+        <div class="fork_wrapper wrapper">
+
+            <!-- ------------------ EN --------------------------  -->
+            <fieldset class="field_en">
+                
+                <h6>FORK A:</h6>
+                <label>English:</label>
+
+                {{ form.fork_question_en_A}}
+
+                
+            </fieldset>
+
+            <!-- ------------------ PT --------------------------  -->
+            <button
+                type="button" 
+                class="btn_show show_pt"
+                _="on click toggle .hidden on the next .field_pt">
+                Show PT
+            </button>
+            <fieldset class="field_pt hidden">
+                <label>Portuguese:</label>
+
+                {{ form.fork_question_pt_A}}
+            </fieldset>
+
+
+            <!-- ------------------ ES --------------------------  -->
+            <button
+                type="button"
+                class="btn_show show_es"
+                _="on click toggle .hidden on the next .field_es">
+                Show ES
+            </button>
+            <fieldset class="field_es hidden">
+                <label>Spanish:</label>
+
+                {{ form.fork_question_es_A}}
+            </fieldset>
+        </div>
+        <button
+            type="button"
+            class="btn_show show_form"
+            _="on click 
+                toggle .hidden on the next <div/>
+                remove .hidden from the next .show_form"
+        >
+            Show Fork B
+        </button>
+
+
+        <!-- ------------------ FORK B --------------------------  -->
+        
+        <div class="fork_wrapper wrapper hidden">
+
+            <!-- ------------------ EN --------------------------  -->
+            <fieldset class="field_en">
+                
+                <h6>FORK B:</h6>
+                <label>English:</label>
+
+                {{ form.fork_question_en_B}}
+
+                
+            </fieldset>
+
+            <!-- ------------------ PT --------------------------  -->
+            <button
+                type="button" 
+                class="btn_show show_pt"
+                _="on click toggle .hidden on the next .field_pt">
+                Show PT
+            </button>
+            <fieldset class="field_pt hidden">
+                <label>Portuguese:</label>
+
+                {{ form.fork_question_pt_B}}
+            </fieldset>
+
+
+            <!-- ------------------ ES --------------------------  -->
+            <button
+                type="button"
+                class="btn_show show_es"
+                _="on click toggle .hidden on the next .field_es">
+                Show ES
+            </button>
+            <fieldset class="field_es hidden">
+                <label>Spanish:</label>
+
+                {{ form.fork_question_es_B}}
+            </fieldset>
+        </div>
+        <button
+            type="button"
+            class="btn_show show_form hidden"
+            _="on click 
+                toggle .hidden on the next <div/>
+                remove .hidden from the next .show_form"
+        >
+            Show Fork C
+        </button>
+
+
+        <!-- ------------------ FORK C --------------------------  -->
+
+
+        <div class="fork_wrapper wrapper hidden">
+
+            <!-- ------------------ EN --------------------------  -->
+            <fieldset class="field_en">
+                
+                <h6>FORK C:</h6>
+                <label>English:</label>
+
+                {{ form.fork_question_en_C}}
+
+                
+            </fieldset>
+
+            <!-- ------------------ PT --------------------------  -->
+            <button
+                type="button" 
+                class="btn_show show_pt"
+                _="on click toggle .hidden on the next .field_pt">
+                Show PT
+            </button>
+            <fieldset class="field_pt hidden">
+                <label>Portuguese:</label>
+
+                {{ form.fork_question_pt_C}}
+            </fieldset>
+
+
+            <!-- ------------------ ES --------------------------  -->
+            <button
+                type="button"
+                class="btn_show show_es"
+                _="on click toggle .hidden on the next .field_es">
+                Show ES
+            </button>
+            <fieldset class="field_es hidden">
+                <label>Spanish:</label>
+
+                {{ form.fork_question_es_C}}
+            </fieldset>
+        </div>
+        <button
+            type="button"
+            class="btn_show show_form hidden"
+            _="on click 
+                toggle .hidden on the next <div/>
+                remove .hidden from the next .show_form"
+        >
+            Show Fork D
+        </button>
+
+        <!-- ------------------ FORK D --------------------------  -->
+
+
+        <div class="fork_wrapper wrapper hidden">
+
+            <!-- ------------------ EN --------------------------  -->
+            <fieldset class="field_en">
+                
+                <h6>FORK D:</h6>
+                <label>English:</label>
+
+                {{ form.fork_question_en_D}}
+
+                
+            </fieldset>
+
+            <!-- ------------------ PT --------------------------  -->
+            <button
+                type="button" 
+                class="btn_show show_pt"
+                _="on click toggle .hidden on the next .field_pt">
+                Show PT
+            </button>
+            <fieldset class="field_pt hidden">
+                <label>Portuguese:</label>
+
+                {{ form.fork_question_pt_D}}
+            </fieldset>
+
+
+            <!-- ------------------ ES --------------------------  -->
+            <button
+                type="button"
+                class="btn_show show_es"
+                _="on click toggle .hidden on the next .field_es">
+                Show ES
+            </button>
+            <fieldset class="field_es hidden">
+                <label>Spanish:</label>
+
+                {{ form.fork_question_es_D}}
+            </fieldset>
+        </div>
+        <button
+            type="button"
+            class="btn_show show_form hidden"
+            _="on click 
+                toggle .hidden on the next <div/>
+                remove .hidden from the next .show_form"
+        >
+            Show Fork E
+        </button>
+
+        <!-- ------------------ FORK E --------------------------  -->
+
+
+        <div class="fork_wrapper wrapper hidden">
+
+            <!-- ------------------ EN --------------------------  -->
+            <fieldset class="field_en">
+                
+                <h6>FORK E:</h6>
+                <label>English:</label>
+
+                {{ form.fork_question_en_E}}
+
+                
+            </fieldset>
+
+            <!-- ------------------ PT --------------------------  -->
+            <button
+                type="button" 
+                class="btn_show show_pt"
+                _="on click toggle .hidden on the next .field_pt">
+                Show PT
+            </button>
+            <fieldset class="field_pt hidden">
+                <label>Portuguese:</label>
+
+                {{ form.fork_question_pt_E}}
+            </fieldset>
+
+
+            <!-- ------------------ ES --------------------------  -->
+            <button
+                type="button"
+                class="btn_show show_es"
+                _="on click toggle .hidden on the next .field_es">
+                Show ES
+            </button>
+            <fieldset class="field_es hidden">
+                <label>Spanish:</label>
+
+                {{ form.fork_question_es_E}}
+            </fieldset>
+        </div>
+        <button
+            type="button"
+            class="btn_show show_form hidden"
+            _="on click 
+                toggle .hidden on the next <div/>
+                remove .hidden from the next .show_form"
+        >
+            Show Fork F
+        </button>
+
+        <!-- ------------------ FORK F --------------------------  -->
+
+
+        <div class="fork_wrapper wrapper hidden">
+
+            <!-- ------------------ EN --------------------------  -->
+            <fieldset class="field_en">
+                
+                <h6>FORK F:</h6>
+                <label>English:</label>
+
+                {{ form.fork_question_en_F}}
+
+                
+            </fieldset>
+
+            <!-- ------------------ PT --------------------------  -->
+            <button
+                type="button" 
+                class="btn_show show_pt"
+                _="on click toggle .hidden on the next .field_pt">
+                Show PT
+            </button>
+            <fieldset class="field_pt hidden">
+                <label>Portuguese:</label>
+
+                {{ form.fork_question_pt_F}}
+            </fieldset>
+
+
+            <!-- ------------------ ES --------------------------  -->
+            <button
+                type="button"
+                class="btn_show show_es"
+                _="on click toggle .hidden on the next .field_es">
+                Show ES
+            </button>
+            <fieldset class="field_es hidden">
+                <label>Spanish:</label>
+
+                {{ form.fork_question_es_F}}
+            </fieldset>
+        </div>
+
+	    <p>There are no more forks to be made</p>
+
+        <!-- ------------------ SEND FORM --------------------------  -->
+        
+        
+
+        <button
+            class="send"> 
+            Save Changes
+        </button>
+    </form>
+</section>

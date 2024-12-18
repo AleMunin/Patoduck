@@ -1,0 +1,37 @@
+<!-- Not included yet because i hated it -->
+
+<div class="form_errors">
+{% if form.name.errors %}
+    <ol>
+    {% for error in form.name.errors %}
+        <li><strong>{{ error|escape }}</strong></li>
+    {% endfor %}
+    </ol>
+{% endif %}
+
+{% if form.walkable.errors %}
+    <ol>
+    {% for error in form.walkable.errors %}
+        <li><strong>{{ error|escape }}</strong></li>
+    {% endfor %}
+    </ol>
+{% endif %}
+
+{% if form.portraits.errors %}
+    <ol>
+    {% for error in form.portraits.errors %}
+        <li><strong>{{ error|escape }}</strong></li>
+    {% endfor %}
+    </ol>
+{% endif %}
+
+{% if form.portraits.errors %}
+    <ol>
+    {% for error in form.portraits.errors %}
+        <li><strong>{{ error|escape }}</strong></li>
+    {% endfor %}
+    </ol>
+{% endif %}
+
+
+</div>

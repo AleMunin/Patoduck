@@ -1,0 +1,28 @@
+{% extends 'base.html'%}
+<!-- The extend to home is temporary, something else when you need -->
+
+{% block layout %}
+<art>
+ 
+    {% block content %}
+
+    <h1> Here are all {{ total_quest }} the quests in the game</h1>
+
+    <article>
+        {% for quest in quests %}
+        <header> {{ quest.title }} </header>
+
+        <p> {{ quest.description }} </p>
+
+        <p> {{ quest.condition }} </p>
+
+        {% endfor %}
+    
+    </article>
+
+    {% endblock %}
+    
+</div>
+
+{% endblock %}
+

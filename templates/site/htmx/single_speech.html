@@ -1,0 +1,92 @@
+<div 
+    id = "print_{{ speech.id }}"
+    class = "speech
+        {% if is_fork == True %} 
+            fork_speech
+        {% else %}
+            individual_speech
+        {% endif %} 
+        "
+    >
+
+    <h4> {{ speech.name }} </h4>
+    
+    <div class = "print_speech">
+        <div class="speech_data">
+            <div> Spoken By: {{ speech.speaker }} </div>
+            <div>Emotion</div>
+            <div>Action</div>
+        </div>
+        
+        <div class="translations">
+        
+            <div class="language_wrap wrapper">
+                <button
+                _= "on click toggle .hidden on the next <div/>">
+                    Show EN
+                </button>
+                <div class="txt_en">
+                    <p> {{ speech.txt_en }} </p>
+                </div>
+            </div>
+
+            <div class="language_wrap wrapper">
+                <button
+                _= "on click toggle .hidden on the next <div/>">
+                    Show PT
+                </button>
+                <div class="txt_pt">
+                    <p> {{ speech.txt_pt }} </p>
+                </div>
+            </div>
+
+            <div class="language_wrap wrapper">
+                <button
+                _= "on click toggle .hidden on the next <div/>">
+                    Show ES
+                </button>
+                <div class="txt_es">
+                    <p> {{ speech.txt_es }} </p>
+                </div>
+            </div>
+            
+
+        </div>
+               
+        <div>This is a test of forks
+
+            <h1>{{ speech.fork_question_en_A }}</h1>
+        
+        </div>
+    </div>
+
+    
+    <div class = "speech_actions">
+
+        <div class = "edit_speech">
+            <button>Edit</button>
+
+        </div>
+
+
+
+        <div class="speech_fork">
+            <!-- Might add a click counter, and remove the request
+                on htmx past 6 forks or something 
+            -->
+            <button
+                class="hx-btn"
+                hx-post="{% url 'get_fork_form' speech.id %}"
+                hx-target="this"
+                hx-swap="outerHTML"
+            >
+                Fork this
+            </button>
+
+            <!-- Add a button to edit fork if it has forks -->
+
+        </div>
+
+
+    </div>
+</div>

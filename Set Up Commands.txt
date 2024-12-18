@@ -4,3 +4,13 @@
 `sudo apt install python3.12-venv`
 
 `source Patoduck/bin/activate` 
+
+# Run
+
+source Patoduck/bin/activate
+
+python manage.py runserver
+
+
+
+
