@@ -11,6 +11,5 @@ source Patoduck/bin/activate
 
 python manage.py runserver
 
-
-
-
+no need to use this outside development:
+python manage.py sass static/sass/ static/css --watch

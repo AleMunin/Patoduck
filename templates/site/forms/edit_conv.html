@@ -4,11 +4,12 @@
 {% block layout %}
  
     {% block content %}
-        <div class="all_container">
+        <main class="all_container">
 
-            <div id="wrap_conv" class="wrapper">
+            <div id="wrap_conv" class="conv_wrapper wrapper">
 
                 <button
+                class= "btn-edit"
                 _="on click 
                     toggle .hidden on #edit_mode_conv
                     toggle .hidden on #read_mode_conv"
@@ -16,19 +17,20 @@
                     Edit Conversation
                 </button>
 
-                <div id="read_mode_conv">
+                <div id="read_mode_conv" class=conv_print>
 
                     {% include 'site/display/print_conv.html' %}
 
                 </div>
 
-                <div id="edit_mode_conv" class="hidden">
+                <div id="edit_mode_conv" class="hidden conv_edit">
                     {% include 'site/forms/form_edit_conv.html' %}
                 </div>
             </div>
         
             
-            <div class = "speech_wrapper grid ">
+            <div class = "speech_wrapper ">
+                <p>Change the class of my parent</p>
 
                 <div class = "wrapper new_speech" >
                     
@@ -47,11 +49,12 @@
                 <div class = "wrapper all_speeches">
                     
                     <button
+                    class="btn_show_wrap"
                     _="on click toggle .hidden on #all_conv_wrapp"
                     
                     > Hide Conversation </button>
                     
-                    <div id="all_conv_wrapp"
+                    <section id="all_conv_wrapp"
                     class="wrapper">
                     <!-- <h1>Here are all the speeches: </h1> -->
                     
@@ -60,12 +63,12 @@
                     {% include 'site/htmx/single_speech.html'%}
                     
                     {% endfor %}
-                    </div>
+                    </section>
                 </div>
 
             </div>
 
-        </div>
+        </main>
         
     {% endblock %}
     

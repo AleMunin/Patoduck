@@ -1,0 +1,271 @@
+// Mostly done by Caroline Varela, but she couldn't
+// be arsed to make a commit just for that
+    
+*
+    margin: 0
+    padding: 0
+    border: none
+    box-sizing: border-box
+    font-family: "Times New Roman", Times, serif
+
+
+    
+html
+    scroll-behavior: smooth
+
+
+nav,main
+    padding: 20px
+
+
+        
+
+// General ones
+
+.hidden // SERIOUSLY DON'T TOUCH
+    display: none
+
+.all_container //Massive container
+    display: flex
+
+.wrapper // rule for ANY container
+    display: flex
+
+.statistics //anything that shows numbers
+    padding: 1px
+
+
+
+.list //Duh
+
+    &-info
+
+        &-title
+            margin-bottom: 20px
+
+        p
+            text-indent: 30px
+
+    ul
+        margin: 20px
+
+        li::before
+            content: "»"
+
+    &-article
+
+        &-header
+            padding: 10px
+
+            h6
+                margin-bottom: 10px
+
+        p
+            text-indent: 15px
+
+        &-description
+            padding: 10px
+
+        &-other
+            padding: 10px
+         
+        &-checkbox
+            padding:10px
+
+
+// Modes
+
+.print
+    &-label
+        padding: 10px
+// Wrappers
+
+.conv_wrapper //mostly #wrap_conv but let's be modular
+
+    .conv_print
+
+    .conv_edit
+
+
+    //#read_mode_conv
+
+    //#edit_mode_conv
+
+    
+
+.form_wrapper
+
+    //.conv_form
+
+
+    .fork_form //the <form>
+
+        .fork_wrapper // fork, not form.
+
+            fieldset
+                h6
+                    margin-bottom: 20px
+                
+                label:
+                    text-align: left
+
+                //div field
+
+            .btn_show
+                margin: 10px
+
+            
+
+            //Specifics:
+
+            //.show_en
+            //.show_pt
+            //.show_es
+            
+            
+            //.field_en
+            //.field_pt
+            //.field_es
+
+     .show_form //btn
+        padding: 10px
+
+    
+       
+
+// Blocks
+
+.speech // general attributes
+
+    &-title //it is a h5
+        margin:10px
+
+    &-print
+
+        &-short
+
+            &-data //info field
+
+            b
+                text-align: left
+
+        &-translations
+
+            .language_wrap //general
+
+                //.btn_show
+
+                .txt
+                    padding: 10px
+
+                //.txt_en
+
+                //.txt_pt
+
+                //.txt_es
+
+        
+
+            //.en_print
+
+            //.pt_print
+
+            //.es_print
+
+            //.btn_show tem aqui
+
+            &-fork
+
+                //&-option
+
+                //h6
+
+                //p
+
+                    //b
+
+    &-action
+
+        //&-edit_speech
+            //btn_edit
+
+        //&-fork
+
+
+
+.speech-individual //paralell to speech
+    padding: 10px
+
+.speech-fork    //paralell to speech
+    padding: 10px
+
+
+.conversation //.print
+
+    &-title
+        padding: 10px
+    
+    &-short
+
+        &-data
+            padding: 10px
+
+    &-long
+        &-title
+            padding: 10px
+
+        &-data
+            padding: 10px
+
+    //Specifics:
+    //&-condition
+
+    //&-description
+
+
+.quest
+
+    padding: 10px
+
+.character
+
+    padding: 10px
+
+.location
+
+    padding: 10px
+
+
+// Buttons
+
+button
+    border-radius: 2px
+
+.btn_show //hyperscript to toggle a .hidden
+    border-radius: 2px
+
+.btn_show_wrap // Butons that show a big wrapper
+
+.btn-edit //exclusively for edit toggles
+    border-radius: 2px
+
+//.hx-btn //htmx request
+
+.btn_send //any button that sends data to the database
+    border-radius: 2px
+
+.btn_submit //any button that will update the page entirely (non-htmx)
+            //hopefully not used much.
+    border-radius: 2px
+
+
+//Language specific, mostly selectors for hyperscript
+
+.show_pt
+    border-radius: 2px
+
+.show_es
+    border-radius: 2px
+
+.show_en // rarely used? English is the default
+    border-radius: 2px

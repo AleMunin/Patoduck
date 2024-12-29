@@ -2,27 +2,42 @@
 <!-- The extend to home is temporary, something else when you need -->
 
 {% block layout %}
-<art>
+<main class="wrapper">
  
     {% block content %}
 
-    <h1> Here are all {{ total_quest }} the quests in the game</h1>
+    <div class="list">
 
-    <article>
+        <header class="list-info">
+            <h6 class="list-info-title">
+                Here are all {{ total_quest }} the quests in the game
+            </h6>
+
+
+        </header>
+
         {% for quest in quests %}
-        <header> {{ quest.title }} </header>
+        <article class="list-article">
+            <header class="list-article-header">
+                <h6>{{ quest.title }}</h6>
+            </header>
 
-        <p> {{ quest.description }} </p>
+            <p class="list-article-description">
+                 {{ quest.description }}
+            </p>
 
-        <p> {{ quest.condition }} </p>
+            <p class="list-article-description">
+                {{ quest.condition }}
+            </p>
 
+            
+        </article>
         {% endfor %}
-    
-    </article>
-
+        
+    </div>
     {% endblock %}
     
-</div>
+</main>
 
 {% endblock %}
 

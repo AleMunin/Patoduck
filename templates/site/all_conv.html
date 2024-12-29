@@ -2,28 +2,37 @@
 <!-- The extend to home is temporary, something else when you need -->
 
 {% block layout %}
-<div>
+<main class="wrapper">
  
     {% block content %}
+    <div class="list">
+        
 
-    <h1> Here are all {{ total_conv }} the conversations in the game</h1>
+        <header class="list-info">
+
+            <h6 class="list-info-title">
+                Here are all {{ total_conv }} the conversations in the game
+            </h6>
+
+            <p>Click on the conversations to edit them or make speeches.</p>
+
+            <p>Conversations that are part of a quest will be showcased as such</p>
 
 
-    <h1> Please fill the form </h1>
-
-    <p> Get your ass out to make other types of sorting </p>
+        </header>
 
 
-    <ul>
-        {% for conv in convs %}
-        <li><a href="{% url 'edit_conv' conv.1 %}"> {{ conv.0 }} </a> - {% if conv.2 == 1 %} [QUEST step {{conv.3}}] {% endif %} </li>    
-        {% endfor %}
-    </ul>
+        <ul>
+            {% for conv in convs %}
+            <li><a href="{% url 'edit_conv' conv.1 %}"> {{ conv.0 }} </a> - {% if conv.2 == 1 %} [QUEST step {{conv.3}}] {% endif %} </li>    
+            {% endfor %}
+        </ul>
 
+    </div>
 
     {% endblock %}
 
-</div>
+</main>
 
 {% endblock %}
 

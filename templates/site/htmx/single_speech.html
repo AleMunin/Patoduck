@@ -2,36 +2,50 @@
     id = "print_{{ speech.id }}"
     class = "speech
         {% if is_fork == True %} 
-            fork_speech
+            speech-fork
         {% else %}
-            individual_speech
+            speech-individual
         {% endif %} 
         "
     >
 
-    <h4> {{ speech.name }} </h4>
+    <h5 class="speech-title">
+        {{ speech.name }}
+    </h5>
     
-    <div class = "print_speech">
-        <div class="speech_data">
-            <div> Spoken By: {{ speech.speaker }} </div>
-            <div>Emotion</div>
-            <div>Action</div>
+    <div class = "speech-print">
+
+        <div class="speech-print-short">
+            <div class = "speech-print-short-data"> 
+                <b>Spoken By:</b> 
+                {{ speech.speaker }} 
+            </div>
+            <div class = "speech-print-short-data"> 
+                <b>Emotion:</b> 
+                Adicionar Emoção 
+            </div>
+            <div class = "speech-print-short-data"> 
+                <b>Ação</b> 
+                Adicionar Ação 
+            </div>
         </div>
         
-        <div class="translations">
+        <div class="speech-print-translations">
         
-            <div class="language_wrap wrapper">
+            <div class="language_wrap wrapper en_print">
                 <button
+                class="btn_show"
                 _= "on click toggle .hidden on the next <div/>">
                     Show EN
                 </button>
-                <div class="txt_en">
+                <div class="txt txt_en">
                     <p> {{ speech.txt_en }} </p>
                 </div>
             </div>
 
-            <div class="language_wrap wrapper">
+            <div class="language_wrap wrapper pt_print">
                 <button
+                class="btn_show"
                 _= "on click toggle .hidden on the next <div/>">
                     Show PT
                 </button>
@@ -40,8 +54,9 @@
                 </div>
             </div>
 
-            <div class="language_wrap wrapper">
+            <div class="language_wrap wrapper es_print">
                 <button
+                class="btn_show"
                 _= "on click toggle .hidden on the next <div/>">
                     Show ES
                 </button>
@@ -53,24 +68,33 @@
 
         </div>
                
-        <div>This is a test of forks
+        <div class="speech-print-fork">
+            <h6>Fork questions will be here:</h6>
 
-            <h1>{{ speech.fork_question_en_A }}</h1>
+            <div class ="speech-print-fork">
+                <p class="speech-print-fork-option">
+                    <b>Option A:</b> {{ speech.fork_question_en_A }}
+                </p>
+
+                <p><b>Leads to:</b> This fork-speech?</p>
+
+            </div>
+            
         
         </div>
     </div>
 
     
-    <div class = "speech_actions">
+    <div class = "speech-action">
 
-        <div class = "edit_speech">
-            <button>Edit</button>
+        <div class = "speech-action-edit_speech">
+            <button class="btn_show btn-edit">Edit</button>
 
         </div>
 
 
 
-        <div class="speech_fork">
+        <div class="speech-action-fork">
             <!-- Might add a click counter, and remove the request
                 on htmx past 6 forks or something 
             -->

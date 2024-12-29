@@ -2,11 +2,24 @@
 <!-- The extend to home is temporary, something else when you need -->
 
 {% block layout %}
-<div>
+<main class="wrapper">
  
     {% block content %}
 
-    <h1> Here are all {{ total_loc }} the locations in the game</h1>
+    <div class="list">
+
+        <header class="list-info">
+
+            <h6 class="list-info-title">
+                Here are all {{ total_loc }} the locations in the game
+            </h6>
+
+            
+        </header>
+        <p>Here are all locations</p>
+        
+    </div>
+    
 
 
 
@@ -20,7 +33,7 @@
 
     {% endblock %}
 
-</div>
+</main>
 
 {% endblock %}
 

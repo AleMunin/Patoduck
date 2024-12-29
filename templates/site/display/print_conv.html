@@ -1,19 +1,19 @@
 <!-- Shows only the text version of the conversation -->
 
-<div class="conversation">
-    <h4> {{ conv.title }} </h4>
+<div class="print conversation">
+    <h4 class="conversation-title"> {{ conv.title }} </h4>
 
-    <div class="grid">
-        <div>{{conv.is_quest}}</div>
-        <div>{{conv.is_cutscene}}</div>
+    <div class="grid conversation-short">
+        <div class="conversation-short-data">{{conv.is_quest}}</div>
+        <div class="conversation-short-data">{{conv.is_cutscene}}</div>
     </div>
 
-    <div>
-        <h6> Condition:</h6>
-        <p>{{ conv.condition }}</p>
+    <div class="conversation-long conversation-condition">
+        <h6 class="conversation-long-title"> Condition:</h6>
+        <p class="conversation-long-data">{{ conv.condition }}</p>
     </div>
     <div>
-        <h6> Condition:</h6>
-        <p>{{ conv.description }}</p>
+        <h6 class="conversation-long-title"> Description:</h6>
+        <p class="conversation-long-data">{{ conv.description }}</p>
     </div>
 </div>
