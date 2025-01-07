@@ -6,6 +6,18 @@
 
 <h1> This is the content </h1>
 
+<div>
+    <form
+    action="{% url 'downall'%}"
+    method="post"
+    >
+    {% csrf_token %}
+        <button>Get son of J</button>
+
+    </form>
+
+</div>
+
 <article class="statistics">
     <h1> Story Stats </h1>
 

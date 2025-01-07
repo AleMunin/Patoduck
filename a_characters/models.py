@@ -8,6 +8,9 @@ class Character (models.Model):
     # add creation date  (actualy make another table with that)
 
     name = models.CharField(max_length=250, unique=True)
+    name_pt = models.CharField(max_length=250, unique=True, blank=True, null=True)
+    name_es = models.CharField(max_length=250, unique=True, blank=True, null=True)
+
     walkable = models.BooleanField(default=False)   # If the character is a single sprite, then it blocks certain actions
 
     published= models.BooleanField(default=False)
@@ -49,6 +52,7 @@ class Action(models.Model):
 class Location (models.Model):
 
     name = models.CharField(max_length=250,unique=True)
+    
     indoors = models.BooleanField(default=False)
     #Inside of self foreign key?
 
@@ -65,10 +69,19 @@ class Location (models.Model):
 class Quest(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
-    title = models.CharField(max_length=250)
+    title = models.CharField(max_length=250, unique=True)
+
+    title_pt = models.CharField(max_length=250, unique=True, null=True)
+    title_es = models.CharField(max_length=250, unique=True, null=True)
 
     condition = models.TextField()
+
     description = models.TextField()
+    description_pt = models.TextField(null=True)
+    description_es = models.TextField(null=True)
+
+    number_of_steps = models.PositiveIntegerField(default=0) #number of conversations it has.
+
     # It is possible to add a foreign key of items you need for the quest
 
     def __str__(self):
@@ -77,17 +90,20 @@ class Quest(models.Model):
 
 class Conversation(models.Model):
 
-    title = models.CharField(max_length=250)
+    title = models.CharField(max_length=250, unique=True)
 
     condition = models.TextField(default="")    # Just a forewarning to implementing the quest
     description = models.TextField()        # Context
 
     creation = models.TimeField(auto_now_add=True)  # For data collection purposes
+    #pt_translated_at = models.TimeField(auto_now_add=True) 
 
     is_quest = models.BooleanField(default=False)   # Practical delimiter
-    is_cutscene = models.BooleanField(default=False)   # Signal if it requires more attention
+    is_cutscene = models.BooleanField(default=False)   # Signals if it requires more attention
+    is_linear = models.BooleanField(default=True)   #Signals if it it is linear.
 
     quest_step = models.PositiveIntegerField(default=0) #useful to order several quests.
+    total_speeches = models.PositiveIntegerField(default=0) #counter of quests
 
     location = models.ForeignKey(   # No need to have it, it is more useful if it is part of a quest, or cutscene
         Location,
@@ -116,9 +132,12 @@ class Speech(models.Model):
     # Add a "Localized" checkbox, in case the translation isn't 1 to 1, so we can keep an eye on it.
 
     id = models.CharField(max_length=100, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    line_hash = models.CharField(max_length=6, null=True) #yarn annoyances
+
+
     comment = models.TextField()    # Context, could have been label, but fuck it.
 
-    name = models.CharField(max_length=250) #"This needs to be a title for speech to go on the .yarn export" # maybe create a function to automate it
+    name = models.CharField(max_length=250, unique=True) #"This needs to be a title for speech to go on the .yarn export" # maybe create a function to automate it
 
     # Every speech is part of a conversation
     conversation = models.ForeignKey(
@@ -131,6 +150,9 @@ class Speech(models.Model):
     txt_en = models.TextField()
     txt_pt = models.TextField(blank=True, null = True)
     txt_es = models.TextField(blank=True, null = True)
+
+    localized_pt = models.BooleanField(default=False)   # If it is not a literal translation. For whatever reason.
+    localized_es = models.BooleanField(default=False)
 
 
     speaker = models.ForeignKey(    # NPC that says it
@@ -176,6 +198,8 @@ class Speech(models.Model):
     # -------------------------------------------
 
     is_first = models.BooleanField(default=False)   # easier to track
+    is_fork = models.BooleanField(default=False) # WAY easier to track
+    fork_letter = models.CharField(max_length = 16, null=True, blank=True)
 
     previous_speech = models.ForeignKey(    # Make the register make sure this is empty if it is marked as first.
         'self',
@@ -196,6 +220,7 @@ class Speech(models.Model):
     # --------------------------------------
 
     has_fork = models.BooleanField(default=False)   # Signaler that the rest here exists
+
     
 
     # Django wants the field to be directly related to a variable.

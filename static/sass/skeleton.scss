@@ -1,0 +1,155 @@
+// $accent1: #000
+// $accent2: #000
+// $accent3: #000
+// $accent4: #000
+
+// $contrast1: #000
+// $contrast2: #000
+
+// $shade1: #000
+// $shade2: #000
+// $shade3: #000
+// $shade4: #000
+
+body{
+    //You know
+}
+
+h1,h2,h3,h4,h5,h6 {
+    
+}
+
+main{
+    //wraps always layout block    
+}
+
+ul {
+
+    li {
+        
+    }    
+}
+
+
+// --------------------- General main classes
+
+.hidden{
+    
+}
+
+.wrapper { // General rule for divs    
+}
+
+.form_wrap{ //exclusively wraps forms
+    
+}
+
+.btn_show{ //any button that shows stuff
+    
+}
+
+.list { // Not necessarily just an li, but a sequentiwal section of quests/conv, char
+    
+    header{
+
+        a{
+            
+        }
+        .title{
+            
+        }
+
+        .description, .instruct{
+
+            p{
+                
+                
+            }
+            
+        }
+    }
+}
+
+.print_main { // When it displays a conversation/quest/char on their own page
+
+    .title{
+        
+    }
+
+    .description, .instruct{
+
+        p{
+            
+            
+        }
+            
+    }
+    
+}
+
+// ------------------- Display
+
+
+.speech { //General behavior
+
+    .print_speech { //Class for displaying speeches
+    
+        .speech_actions{ // wrapper for buttons and stuff
+
+            .edit_speech{
+                
+            }
+                
+        }
+    }
+    
+}
+
+.individual_speech{ //Regular, sequential speech
+    
+}
+
+.speech_fork{ //"replies" to forks
+    
+}
+
+    
+
+
+
+
+// ------------------- Forms
+
+form {
+    
+}
+
+fieldset {
+    
+}
+
+.fork_wrapper { //wraps the languages for a fork question
+
+    .field_en, .field_pt, .field_es { //fieldsets
+
+        label {
+            
+        }
+
+        h6 { //The "title" of the form
+            
+        }
+        
+    }
+
+    button { //generealize button behavior
+        
+    }
+
+
+    .show_form{ //any button that shows specifically parts of a form.
+        
+    }
+    
+}
+

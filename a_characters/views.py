@@ -3,6 +3,10 @@ from django.urls import reverse
 from .models import *
 from django import forms 
 from django.forms import ModelForm  # because apparently importing forms or * was not working.
+
+import json, io, zipfile
+from django.http import JsonResponse, HttpResponse
+
 # Create your views here.
 
 # RUles of Thumb:
@@ -374,7 +378,7 @@ def add_as_fork(og_speech,speech,conv):
     conv.save()
     speech.save()
 
-def validate_speech(conv_pk,form,reply_to=None):
+def og_validate_speech(conv_pk,form,reply_to=None):
     # assumes post was confirmed
     # NEEDS a form request from post, and that the form was valid
         # It does check form.is_valid here, but just throws a wrench so I can wake up about it, in case
@@ -475,7 +479,22 @@ def validate_speech(conv_pk,form,reply_to=None):
         return speech
     return False # This will throw an ugly error
 
+def validate_speech(request,pk): # wll be create_speech_process
+    # assumes you already queried the conversation.
+    # assumes you already saved the form
 
+    
+    # use conv to check previous speech, change count so on.
+    # if has fork call it SPLIT or BRANCH on name.
+    # if it is linear just count the amount and throw it as +1
+    # check if conv has speeches.
+    # if speech.is_fork() go straight to previous_speech.
+
+    #enforce names on itself, on the forks, so on.
+
+    # if speech.has_fork is True
+    # speech.name = f"{speech.name (SPLIT)}
+    # go to conv.is_linear set up to false.
 
 def create_speech_process(request,pk): # saves speech
     # can be used to just edit too, just change the
@@ -489,6 +508,9 @@ def create_speech_process(request,pk): # saves speech
             
             speech = form.save(commit=False) #we still want to alter the name
             
+            # Validate it
+
+
             speech.save()
 
             is_fork = False
@@ -510,7 +532,7 @@ def get_fork_fields(obj,language_group): # management of my own madness
 
     match language_group:
 
-        case "all":
+        case "all": # does not return the ids, though
             my_initials = { #thank god alt + click can copy paste properly
             
                 'fork_question_en_A' : speech.fork_question_en_A, 
@@ -538,6 +560,17 @@ def get_fork_fields(obj,language_group): # management of my own madness
                 'fork_question_es_F' : speech.fork_question_es_F,
 
             }
+
+        case "ids":
+            my_initials = {
+                "fork_speech_AA" : speech.fork_speech_AA,
+                "fork_speech_BB" : speech.fork_speech_BB,
+                "fork_speech_CC" : speech.fork_speech_CC,
+                "fork_speech_DD" : speech.fork_speech_DD,
+                "fork_speech_EE" : speech.fork_speech_EE,
+                "fork_speech_FF" : speech.fork_speech_FF,
+            }
+
         case "en":
             my_initials = { #thank god alt + click can copy paste properly
             
@@ -753,4 +786,164 @@ def get_fork_question(request,speech_pk):
         return render(request,'site/htmx/fork_speech_form.html', context) 
 
     
+
+# -----------------
+
+# this one is not registered, but have tested them before
+def download_conv_only(request):
+
+    queryset = Conversation.objects.all()
+    data = list(queryset.values())
+
+    json_data = json.dumps(data, indent=4, sort_keys=True, default=str)
+
+    response = HttpResponse(
+        json_data, 
+        content_type='application/json'
+        )
+    response['Content-Disposition'] = 'attachment; filename="data.json"'
+
+    
+    return response
+
+
+def download_all_flat(request): #json dumps individually. Does not make formats nice like names instead of id-keys and so on
+
+    all_convs = Conversation.objects.all()
+    #data = list(convs.values())
+
+    all_json = []
+    buffer = io.BytesIO() # will hold file in memory
+
+    for conv in all_convs:
+        conv_json = []
+        speech_count = 0
+
+        conv_json.append(f"{conv.title}/000--(CONV)--{conv.title}.json")
+        conv_json.append(json.dumps(conv.__dict__, indent=4, sort_keys=True, default=str))
+
+        speeches = Speech.objects.filter(conversation=conv.id)
+
+        if not speeches:    #if there are no speeches, we skip saving the conv to json.
+            continue
+
+        all_json.append(conv_json)
+
+
+        for speech in speeches:
+
+            speech_json = []
+            if speech.is_first is True:
+                file_name = f"000--(START)--{speech.name}"
+            elif speech.has_fork:
+
+                file_name = f"0{speech_count}--(FORKS)--{speech.name}"
+            else:
+                file_name = f"0{speech_count}--{speech.name}"
+            
+            speech_count += 1
+
+            file_path = f'{conv.title}/{file_name}.json'
+            #sanitize dialogue here
+            # json dump
+
+            speech_json.append(file_path)
+            speech_json.append(json.dumps(speech.__dict__, indent=4, sort_keys=True, default=str))
+            
+            all_json.append(speech_json)
+
+    with zipfile.ZipFile(buffer,'w') as zip:
+        for json_dict in all_json:
+            zip.writestr(json_dict[0],json_dict[1])
+
+    buffer.seek(0)
+
+    #json_data = json.dumps(data, indent=4, sort_keys=True, default=str)
+
+    response = HttpResponse(
+        buffer, 
+        content_type='application/zip'
+        )
+    response['Content-Disposition'] = 'attachment; filename="all_conv.zip"'
+
+    
+    return response
+
+
+# registered 
+def download_all(request):
+
+    all_convs = Conversation.objects.all()
+    #data = list(convs.values())
+
+    all_json = []
+    buffer = io.BytesIO() # will hold file in memory
+
+    for conv in all_convs:
+        conv_json = []
+        speech_count = 0
+
+        conv_json.append(f"{conv.title}/000--(CONV)--{conv.title}.json")
+        conv_json.append(json.dumps(conv.__dict__, indent=4, sort_keys=True, default=str))
+
+        speeches = Speech.objects.filter(conversation=conv.id)
+
+        if not speeches:    #if there are no speeches, we skip saving the conv to json.
+            continue
+
+        all_json.append(conv_json)
+
+
+        for speech in speeches:
+
+            speech_json = []
+            if speech.is_first is True:
+                file_name = f"000--(DIA)(START)--{speech.name}"
+            elif speech.has_fork:
+
+                file_name = f"0{speech_count}--(DIA)(FORKS)--{speech.name}"
+            else:
+                file_name = f"0{speech_count}--(DIA)--{speech.name}"
+            
+            speech_count += 1
+
+            file_path = f'{conv.title}/{file_name}.json'
+            #sanitize dialogue here
+            
+            to_json = speech.__dict__
+            fork_fields = get_fork_fields(speech,"ids")
+            
+            to_json['next_speech'] = Speech.objects.filter(id=speech.next_speech).values_list("name")
+            to_json['previous_speech'] = Speech.objects.filter(id=speech.previous_speech).values_list("name")
+
+            for key,field in fork_fields.items():
+                if field is None:
+                    continue
+                to_json[key] = Speech.objects.filter(id=field).values_list("name")
+
+            
+            # json dump
+
+            speech_json.append(file_path)
+            speech_json.append(json.dumps(to_json, indent=4, sort_keys=True, default=str))
+
+            
+            all_json.append(speech_json)
+
+    with zipfile.ZipFile(buffer,'w') as zip:
+        for json_dict in all_json:
+            zip.writestr(json_dict[0],json_dict[1])
+
+    buffer.seek(0)
+
+    #json_data = json.dumps(data, indent=4, sort_keys=True, default=str)
+
+    response = HttpResponse(
+        buffer, 
+        content_type='application/zip'
+        )
+    response['Content-Disposition'] = 'attachment; filename="all_conv.zip"'
+
+    
+    return response
 
