@@ -92,7 +92,7 @@ class Conversation(models.Model):
 
     title = models.CharField(max_length=250, unique=True)
 
-    condition = models.TextField(default="")    # Just a forewarning to implementing the quest
+    condition = models.TextField(blank=True, null=True)    # Just a forewarning to implementing the quest
     description = models.TextField()        # Context
 
     creation = models.TimeField(auto_now_add=True)  # For data collection purposes
@@ -104,6 +104,10 @@ class Conversation(models.Model):
 
     quest_step = models.PositiveIntegerField(default=0) #useful to order several quests.
     total_speeches = models.PositiveIntegerField(default=0) #counter of quests
+    broken_chain = models.BooleanField(default=False)
+
+    my_code = models.TextField(blank=True, null=True)
+
 
     location = models.ForeignKey(   # No need to have it, it is more useful if it is part of a quest, or cutscene
         Location,
@@ -132,10 +136,11 @@ class Speech(models.Model):
     # Add a "Localized" checkbox, in case the translation isn't 1 to 1, so we can keep an eye on it.
 
     id = models.CharField(max_length=100, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
-    line_hash = models.CharField(max_length=6, null=True) #yarn annoyances
+    line_hash = models.CharField(max_length=6, blank=True, null=True, unique=True) #yarn annoyances
 
-
-    comment = models.TextField()    # Context, could have been label, but fuck it.
+    
+    comment = models.TextField(blank=True, null=True)    # Context, could have been label, but fuck it.
+    my_code = models.TextField(blank=True, null=True)
 
     name = models.CharField(max_length=250, unique=True) #"This needs to be a title for speech to go on the .yarn export" # maybe create a function to automate it
 
@@ -154,6 +159,9 @@ class Speech(models.Model):
     localized_pt = models.BooleanField(default=False)   # If it is not a literal translation. For whatever reason.
     localized_es = models.BooleanField(default=False)
 
+    #proofread_en = models.BooleanField(default=False)
+    #proofread_pt = models.BooleanField(default=False)
+    #proofread_es = models.BooleanField(default=False)
 
     speaker = models.ForeignKey(    # NPC that says it
         Character,
@@ -198,8 +206,9 @@ class Speech(models.Model):
     # -------------------------------------------
 
     is_first = models.BooleanField(default=False)   # easier to track
-    is_fork = models.BooleanField(default=False) # WAY easier to track
-    fork_letter = models.CharField(max_length = 16, null=True, blank=True)
+    is_fork = models.BooleanField(default=False) # WAY easier to track. If it is reply to a Fork, it is false.
+    #fork_letter = models.CharField(max_length = 16, null=True, blank=True)
+    fork_letter = models.TextField(max_length=15,blank=True, null=True)
 
     previous_speech = models.ForeignKey(    # Make the register make sure this is empty if it is marked as first.
         'self',

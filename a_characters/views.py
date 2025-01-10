@@ -5,6 +5,7 @@ from django import forms
 from django.forms import ModelForm  # because apparently importing forms or * was not working.
 
 import json, io, zipfile
+import secrets #for hash
 from django.http import JsonResponse, HttpResponse
 
 # Create your views here.
@@ -16,516 +17,8 @@ from django.http import JsonResponse, HttpResponse
 # functions not called views or processes are usually called by others
 
 
-def home_view(request):
+# Tools
 
-    #This view will be called only for chars, later down the line
-
-    chars = Character.objects.all()
-    quests = Quest.objects.all()
-    locs = Location.objects.all()
-    convs = Conversation.objects.all()
-    speeches = Speech.objects.all()
-
-
-    context ={
-        "all_chars" : len(chars),
-        'all_locs' : len(locs),
-        "all_quests": len(quests),
-        "all_convs" : len(convs),
-        "all_speeches" : len(speeches)
-    }
-
-    return render(request,'site/home.html', context )
-
-
-# Form Views ============================================================
-
-# Character ----------------------------------------------------
-
-class CharCreateForm(ModelForm):
-    class Meta:
-        model = Character
-        fields = '__all__'
-
-
-def character_create_view(request):
-    form = CharCreateForm()
-
-    if request.method == 'POST':
-        form = CharCreateForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-
-    return render(request,'site/forms/char/create_char.html', {'form' : form })
-
-def all_char_view(request):
-
-    all_char = Character.objects.all()
-    total_char= len(all_char)
-
-
-    #check if conversations are part of a quest? idk
-
-    return render(request, 'site/all_char.html', { "chars" : all_char, "total_char" : total_char } )
-
-# Location ----------------------------------------------------
-
-class LocationCreateForm(ModelForm):
-    class Meta:
-        model = Location
-        fields = '__all__'
-
-def location_create_view(request):
-
-    if request.method == 'POST':
-        form = LocationCreateForm(request.POST)
-        if form.is_valid():
-            form.save()
-            
-    form = LocationCreateForm()
-    
-    context = {
-        "form" : form
-    }
-    return render(request, 'site/forms/loc/create_location.html', context)
-
-def all_location_view(request):
-
-    all_loc = Location.objects.all()
-    total_loc= len(all_loc)
-
-    context = {
-        "all_loc" : all_loc,
-        "total_loc" : total_loc
-    }
-
-
-    #check if conversations are part of a quest? idk
-
-    return render(request, 'site/all_loc.html', context )
-
-    
-# Quest -----------------------------------------------------
-
-class QuestCreateForm(ModelForm):
-    class Meta:
-        model = Quest
-        fields = '__all__'
-
-def quest_create_view(request):
-    form = QuestCreateForm()
-
-    if request.method == 'POST':
-        form = QuestCreateForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-
-    return render(request,'site/forms/create_quest.html', {'form' : form })
-
-def all_quest_view(request):
-    all_quests = Quest.objects.all()
-    total_quest = len(all_quests)
-
-    return render(request, 'site/all_quests.html', { "quests" : all_quests, "total_quest" : total_quest } )
-
-# Conversation & Speeches -----------------------------------------------------
-
-class ConversationCreateForm(ModelForm):
-    class Meta:
-        model = Conversation
-        fields = '__all__'
-
-class ConversationEditForm(ModelForm): #edits the conversation, not the speeches
-    class Meta:
-        model = Conversation
-        fields = ['title', 'is_quest', 'quest', 'quest_step', 'is_cutscene', 'condition','description']
-        labels = {
-            'body' : '',
-        }
-
-    # CONDITIONALS
-    def __init__(self, *args, **kwargs): # there would be probably a better way but i can't be bothered
-        super(ConversationEditForm, self).__init__(*args, **kwargs) #inheritance beurocracy
-
-        #Those will toggle when "is quest is selected"
-        self.fields['is_quest'].widget.attrs.update({'id': 'is_quest_conv'})
-        self.fields['quest'].widget.attrs.update({
-            'id'   : 'quest_select',
-            'class': 'hidden_for_now'
-            })
-        self.fields['quest_step'].widget.attrs.update({
-            'id'   : 'quest_step',
-            'class': 'hidden_for_now'
-            })
-        
-
-
-class SpeechCreateForm(ModelForm):
-    class Meta:
-        model = Speech
-        fields = '__all__' #maybe remove that because we don't want the name or conversation
-
-    #this way I don't need to know the default field type to add class
-
-    def __init__(self, *args, **kwargs): # there would be probably a better way but i can't be bothered
-        super(SpeechCreateForm, self).__init__(*args, **kwargs) #inheritance beurocracy
-
-        # Regular
-
-        self.fields['name'].widget.attrs.update({'class': 'speech_name'})
-
-        # Hidden
-
-        self.fields['txt_es'].widget.attrs.update({'class': 'speech_name hide_annoying_parent'})
-
-        self.fields['previous_speech'].widget.attrs.update({'class': 'speech_name hide_annoying_parent'})
-        self.fields['next_speech'].widget.attrs.update({'class': 'next_speech hide_annoying_parent'})
-
-        self.fields['fork_question_en_A'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
-        self.fields['fork_question_pt_A'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
-        self.fields['fork_question_es_A'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
-
-        self.fields['fork_speech_AA'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
-
-        self.fields['fork_question_en_B'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
-        self.fields['fork_question_pt_B'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
-        self.fields['fork_question_es_B'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
-
-        self.fields['fork_speech_BB'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
-
-        self.fields['fork_question_en_C'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
-        self.fields['fork_question_pt_C'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
-        self.fields['fork_question_es_C'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
-
-        self.fields['fork_speech_CC'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
-
-        self.fields['fork_question_en_D'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
-        self.fields['fork_question_pt_D'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
-        self.fields['fork_question_es_D'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
-
-        self.fields['fork_speech_DD'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
-
-        self.fields['fork_question_en_E'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
-        self.fields['fork_question_pt_E'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
-        self.fields['fork_question_es_E'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
-
-        self.fields['fork_speech_EE'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
-
-        self.fields['fork_question_en_F'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
-        self.fields['fork_question_pt_F'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
-        self.fields['fork_question_es_F'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
-
-        self.fields['fork_speech_FF'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
-                                                 
-        # hide_annoying_parent and Read Only 
-        # tried and didn't work, will deal with it later.
-        self.fields['conversation'].widget.attrs.update({'class': 'speech_conv hide_annoying_parent'})
-
-
-def all_conv_view(request):
-
-    all_conv = Conversation.objects.values_list('title', 'id', 'is_quest', 'quest_step')
-    total_convs = len(all_conv)
-    print(all_conv[0])
-
-
-    #check if conversations are part of a quest? idk
-
-    return render(request, 'site/all_conv.html', { "convs" : all_conv, "total_conv" : total_convs } )
-
-
-def conversation_create_view(request):
-    #form = ConversationCreateForm()
-
-    if request.method == 'POST':        # if it is processing the form with a new conversation
-        form = ConversationCreateForm(request.POST)
-        if form.is_valid():
-            new_form = form.save()
-            request.session['conv_request'] = str(new_form.id)   # get the primary key of the new conversation
-
-            return redirect("all_conv") # change to edit_conv.
-            #redirect to a speech edit with the get method for x talk
-    else:
-        form = ConversationCreateForm()
-
-
-    return render(request,'site/forms/create_conversation.html', {'form' : form })
-
-
-def edit_conv_view(request,pk):
-    print("")
-    
-    conv = Conversation.objects.get(id=pk)
-    conv_name = f"{conv.title} Speech []"
-
-    conv_form = ConversationEditForm(instance=conv)
-
-
-    initial_values = {
-        'conversation' : pk,
-        'name' : conv_name,
-        'txt_en' : "LOLOLOL" }
-
-    speech_form = SpeechCreateForm(initial=initial_values)
-
-    # This section will be updated with the HTMX stuff.
-    # Maybe we leave this function to only get this.
-
-    if request.method == 'POST':
-        #remove instance, add initial? Careful with name order
-        new_conv = ConversationEditForm(request.POST, instance=conv)
-        if new_conv.is_valid():
-            new_conv.save()
-
-            conv_form = new_conv
-            conv = Conversation.objects.get(id=pk)
-            #you can also add old_conv to show a com a comparison
-
-    # Get all speeches linked to this
-    speeches = Speech.objects.filter(conversation=pk)
-
-
-    context = {
-
-        'pk' : pk,  #no need to be this way but i'm fed up
-        
-        'conv_form' : conv_form,
-        'conv' : conv,
-        #'old_conv' : old_conv
-
-        'speech_form' : speech_form,
-
-        'speeches' : speeches
-
-    }
-    return render(request,'site/forms/edit_conv.html', context)
-# -----------------------------------------------------
-
-# Create speech
-
-class ForkCreateForm(ModelForm): 
-    class Meta:
-            model = Speech
-            fields = [
-                'fork_question_en_A',
-                'fork_question_pt_A',
-                'fork_question_es_A',
-                
-                'fork_question_en_B',
-                'fork_question_pt_B',
-                'fork_question_es_B',
-
-                'fork_question_en_C',
-                'fork_question_pt_C',
-                'fork_question_es_C',
-
-                'fork_question_en_D',
-                'fork_question_pt_D',
-                'fork_question_es_D',
-
-                'fork_question_en_E',
-                'fork_question_pt_E',
-                'fork_question_es_E',
-
-                'fork_question_en_F',
-                'fork_question_pt_F',
-                'fork_question_es_F',
-                ]
-
-def add_as_fork(og_speech,speech,conv):
-    # Register id keys on its places and checks if the chain of foreign keys can break
-
-    fork_validate = False
-
-    # arguments are speech objects
-    # if no slots on forks for that speech.
-    # write on speech.commentary and on og_speech.commentary.
-
-    if og_speech.has_fork is False and og_speech.next_speech is None: #if a honest mistake happened
-        og_speech.has_fork = fork_validate = True
-
-    else:
-        og_speech.comment = "[!! This speech should be a fork but it isn't !!]" + og_speech.comment
-        conv.description = "[!! This conversation has blank fork, check their comments !!]  " + conv.description
-        speech.comment = "[!! This speech lis linked to an empty form !!] " + speech.comment
-
-        # Any changes to correct this are better doe manually. At best write a log in here.
-
-    if fork_validate:
-        fork_slots = [og_speech.fork_speech_AA, og_speech.fork_speech_BB,og_speech.fork_speech_CC,og_speech.fork_speech_DD,og_speech.fork_speech_EE,og_speech.fork_speech_FF]
-        found_a_fork = False
-        #already_a_fork = False
-        empty_slot = None
-
-        for slot in fork_slots:
-
-            if slot is speech.id:
-                #already_a_fork = True # just if you need it.
-                break
-            if slot is None:
-                empty_slot = slot
-                found_a_fork = True
-
-        if found_a_fork is False:
-            speech.comment = "[!! This links to a speech with too many forks for the game !!]" + speech.comment
-            conv.description = "[!! Some speeches have too many forks !!]" + conv.description
-        else:
-            empty_slot = speech.id
-
-    og_speech.save()
-    conv.save()
-    speech.save()
-
-def og_validate_speech(conv_pk,form,reply_to=None):
-    # assumes post was confirmed
-    # NEEDS a form request from post, and that the form was valid
-        # It does check form.is_valid here, but just throws a wrench so I can wake up about it, in case
-        # I call this without doing it.
-    # Needs a conversation to exist beforehand
-    # Reply_to can either be a None or a Speech.id
-    
-
-
-    # maybe make it optional for be speech pk o a second argument?
-    # assumes you got the pk from a get_object_or_404.
-    # Call would be like:
-    # if request.method == 'POST':
-    #   validate_speech(conv_pk, SpeechCreateForm(request.POST), speech_pk )
-    
-
-    conv = get_object_or_404(Conversation,id=conv_pk) #get conversation
-
-    if form.is_valid():
-        conv_speeches = Speech.objects.filter(conversation=pk) # get before having this one on the list
-        speech=form.save(commit=False)
-
-
-        if reply_to is not None: # If definitely know who you'r replying to.
-
-            og_speech = get_object_or_404(Speech,id=reply_to)
-
-            speech.previous_speech = reply_to
-
-            if (og_speech.has_fork is False) and (og_speech.next_speech is None or og_speech.next_speech is speech.id):
-                # this means it is a reply to something.
-                og_speech.next_speech = speech.id
-
-            else: # It will deal with it
-                add_as_fork(og_speech,speech,conv) # it will comment the problem there too
-
-            og_speech.save()
-            speech.save()
-
-        elif not conv_speeches.exists(): # if no other speeches, this is the first
-
-            speech.is_first = True
-            speech.save()
-
-        else: # ASSUMES THE CONVERSATION IS LINEAR, and this is a response.
-            first_speech = None
-            
-            for single_speech in conv_speeches: # Sorts to find a is_first
-
-                if single_speech.id is speech.id: continue # just good measure
-
-                if single_speech.is_first is True:
-                    next_chain = first_speech = single_speech.id
-            
-            # Once it knows where to start, it will loop the chain of foreign keys, looking
-            # for the last one, which will have the next_speech field as null.
-            # objects.get raises an exception in case the key is invalid for whatever reason.
-            # It also register if it ever finds a fork
-            #   (If there is ever a fork in a conversation, all following replies should have a reply_to key)
-
-            while next_chain is not None:
-                try: 
-                    next_speech = Speech.objects.get(id=next_chain)
-
-                    if next_speech.has_fork is True:
-                        next_speech.comment = f" {next_speech.comment} [!!  There shouldn't be forks in this talk something went wrong !!]"
-                        speech.comment = "[!! This was a linear reply but it got lost in a fork !!]"
-                        
-                        next_speech.save()
-                        speech.save()
-
-                        next_chain = None
-
-
-                    else:
-                        if next_speech.next_speech is None:
-                            next_speech.next_speech = speech.id
-                            speech.previous_speech = next_speech
-
-                            next_speech.save()
-                            speech.save()
-                        else:
-                            next_speech = next_speech.next_speech
-
-
-
-                except:
-                    next_chain = None
-                    speech.comment = "[!! This speech was supposed to be on the end of a linear line, but something went wrong !!]]"
-                
-            speech.save()
-
-            # if all the options have a fork, write a comment on this and save
-            # maybe update the models on rogue lost speches
-
-
-        speech.save()
-        return speech
-    return False # This will throw an ugly error
-
-def validate_speech(request,pk): # wll be create_speech_process
-    # assumes you already queried the conversation.
-    # assumes you already saved the form
-
-    
-    # use conv to check previous speech, change count so on.
-    # if has fork call it SPLIT or BRANCH on name.
-    # if it is linear just count the amount and throw it as +1
-    # check if conv has speeches.
-    # if speech.is_fork() go straight to previous_speech.
-
-    #enforce names on itself, on the forks, so on.
-
-    # if speech.has_fork is True
-    # speech.name = f"{speech.name (SPLIT)}
-    # go to conv.is_linear set up to false.
-
-def create_speech_process(request,pk): # saves speech
-    # can be used to just edit too, just change the
-    # htmx command to swap current field
-    conv = get_object_or_404(Conversation,id=pk)
-
-    if request.method == 'POST':
-        form = SpeechCreateForm(request.POST)
-
-        if form.is_valid():
-            
-            speech = form.save(commit=False) #we still want to alter the name
-            
-            # Validate it
-
-
-            speech.save()
-
-            is_fork = False
-            #speech.conversation = pk
-            #add the conversation
-            #alter the name
-            
-    return render(request,'site/htmx/single_speech.html', {'speech' : speech, 'is_fork' : is_fork }) # will be replaced with render
-
-
-
-def edit_speech_process(request,speech_pk):
-    # Gets form with said speech, adds all its values as default.
-    print("")
-    
 
 def get_fork_fields(obj,language_group): # management of my own madness
     speech = obj
@@ -678,6 +171,600 @@ def get_fork_fields(obj,language_group): # management of my own madness
     return my_initials
 
 
+def create_hash(speech):    #generate hexadecimal of 6 digits and checks if it is unique, DOES NOT save.
+    unique = False
+    hex = secrets.token_hex(3)
+    while unique is False:
+        if not Speech.objects.filter(line_hash=hex):
+            unique = True
+        else:
+            hex =  secrets.token_hex(3)
+    else:
+        speech.line_hash = hex
+        return speech
+
+
+# FULL PAGE VIEWS
+
+def home_view(request):
+
+    #This view will be called only for chars, later down the line
+
+    chars = Character.objects.all()
+    quests = Quest.objects.all()
+    locs = Location.objects.all()
+    convs = Conversation.objects.all()
+    speeches = Speech.objects.all()
+
+
+    context ={
+        "all_chars" : len(chars),
+        'all_locs' : len(locs),
+        "all_quests": len(quests),
+        "all_convs" : len(convs),
+        "all_speeches" : len(speeches)
+    }
+
+    return render(request,'site/home.html', context )
+
+# LISTS
+
+def all_char_view(request):
+
+    all_char = Character.objects.all()
+    total_char= len(all_char)
+    return render(request, 'site/all_char.html', { "chars" : all_char, "total_char" : total_char } )
+
+def all_location_view(request):
+
+    all_loc = Location.objects.all()
+    total_loc= len(all_loc)
+
+    context = {
+        "all_loc" : all_loc,
+        "total_loc" : total_loc
+    }
+
+    #check if conversations are part of a quest? idk
+
+    return render(request, 'site/all_loc.html', context )
+
+def all_quest_view(request):
+    all_quests = Quest.objects.all()
+    total_quest = len(all_quests)
+
+    return render(request, 'site/all_quests.html', { "quests" : all_quests, "total_quest" : total_quest } )
+
+def all_conv_view(request):
+
+    all_conv = Conversation.objects.values_list('title', 'id', 'is_quest', 'quest_step')
+    total_convs = len(all_conv)
+    
+    return render(request, 'site/all_conv.html', { "convs" : all_conv, "total_conv" : total_convs } )
+
+
+
+# Form Views ============================================================
+
+# Character ----------------------------------------------------
+
+class CharCreateForm(ModelForm):
+    class Meta:
+        model = Character
+        fields = '__all__'
+
+
+def character_create_view(request):
+    form = CharCreateForm()
+
+    if request.method == 'POST':
+        form = CharCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    return render(request,'site/forms/char/create_char.html', {'form' : form })
+
+
+# Location ----------------------------------------------------
+
+class LocationCreateForm(ModelForm):
+    class Meta:
+        model = Location
+        fields = '__all__'
+
+def location_create_view(request):
+
+    if request.method == 'POST':
+        form = LocationCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            
+    form = LocationCreateForm()
+    
+    context = {
+        "form" : form
+    }
+    return render(request, 'site/forms/loc/create_location.html', context)
+
+
+
+    
+# Quest -----------------------------------------------------
+
+class QuestCreateForm(ModelForm):
+    class Meta:
+        model = Quest
+        fields = '__all__'
+
+def quest_create_view(request):
+    form = QuestCreateForm()
+
+    if request.method == 'POST':
+        form = QuestCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    return render(request,'site/forms/create_quest.html', {'form' : form })
+
+
+# Conversation & Speeches -----------------------------------------------------
+
+class ConversationCreateForm(ModelForm):
+    class Meta:
+        model = Conversation
+        fields = '__all__'
+
+class ConversationEditForm(ModelForm): #edits the conversation, not the speeches
+    class Meta:
+        model = Conversation
+        fields = ['title', 'is_quest', 'quest', 'quest_step', 'is_cutscene', 'condition','description']
+        labels = {
+            'body' : '',
+        }
+
+    # CONDITIONALS
+    def __init__(self, *args, **kwargs): # there would be probably a better way but i can't be bothered
+        super(ConversationEditForm, self).__init__(*args, **kwargs) #inheritance beurocracy
+
+        #Those will toggle when "is quest is selected"
+        self.fields['is_quest'].widget.attrs.update({'id': 'is_quest_conv'})
+        self.fields['quest'].widget.attrs.update({
+            'id'   : 'quest_select',
+            'class': 'hidden_for_now'
+            })
+        self.fields['quest_step'].widget.attrs.update({
+            'id'   : 'quest_step',
+            'class': 'hidden_for_now'
+            })
+        
+
+
+class SpeechCreateForm(ModelForm):
+    class Meta:
+        model = Speech
+        fields = '__all__' #maybe remove that because we don't want the name or conversation
+
+    #this way I don't need to know the default field type to add class
+
+    def __init__(self, *args, **kwargs): # there would be probably a better way but i can't be bothered
+        super(SpeechCreateForm, self).__init__(*args, **kwargs) #inheritance beurocracy
+
+        # Regular
+
+        self.fields['name'].widget.attrs.update({'class': 'speech_name'})
+
+        # Hidden
+
+        self.fields['txt_es'].widget.attrs.update({'class': 'speech_name hide_annoying_parent'})
+
+        self.fields['previous_speech'].widget.attrs.update({'class': 'speech_name hide_annoying_parent'})
+        self.fields['next_speech'].widget.attrs.update({'class': 'next_speech hide_annoying_parent'})
+
+        self.fields['fork_question_en_A'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
+        self.fields['fork_question_pt_A'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
+        self.fields['fork_question_es_A'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
+
+        self.fields['fork_speech_AA'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
+
+        self.fields['fork_question_en_B'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
+        self.fields['fork_question_pt_B'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
+        self.fields['fork_question_es_B'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
+
+        self.fields['fork_speech_BB'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
+
+        self.fields['fork_question_en_C'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
+        self.fields['fork_question_pt_C'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
+        self.fields['fork_question_es_C'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
+
+        self.fields['fork_speech_CC'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
+
+        self.fields['fork_question_en_D'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
+        self.fields['fork_question_pt_D'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
+        self.fields['fork_question_es_D'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
+
+        self.fields['fork_speech_DD'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
+
+        self.fields['fork_question_en_E'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
+        self.fields['fork_question_pt_E'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
+        self.fields['fork_question_es_E'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
+
+        self.fields['fork_speech_EE'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
+
+        self.fields['fork_question_en_F'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
+        self.fields['fork_question_pt_F'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
+        self.fields['fork_question_es_F'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
+
+        self.fields['fork_speech_FF'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
+                                                 
+        # hide_annoying_parent and Read Only 
+        # tried and didn't work, will deal with it later.
+        self.fields['conversation'].widget.attrs.update({'class': 'speech_conv hide_annoying_parent'})
+
+
+
+def conversation_create_view(request):
+    #form = ConversationCreateForm()
+
+    if request.method == 'POST':        # if it is processing the form with a new conversation
+        form = ConversationCreateForm(request.POST)
+        if form.is_valid():
+            new_form = form.save()
+            request.session['conv_request'] = str(new_form.id)   # get the primary key of the new conversation
+
+            return redirect("all_conv") # change to edit_conv.
+            #redirect to a speech edit with the get method for x talk
+    else:
+        form = ConversationCreateForm()
+
+
+    return render(request,'site/forms/create_conversation.html', {'form' : form })
+
+
+def edit_conv_view(request,pk):
+    print("")
+    
+    conv = Conversation.objects.get(id=pk)
+    conv_name = f"{conv.title} Speech []"
+
+    conv_form = ConversationEditForm(instance=conv)
+
+
+    initial_values = {
+        'conversation' : pk,
+        'name' : conv_name,
+        'txt_en' : "LOLOLOL" }
+
+    speech_form = SpeechCreateForm(initial=initial_values)
+
+    # This section will be updated with the HTMX stuff.
+    # Maybe we leave this function to only get this.
+
+    if request.method == 'POST':
+        #remove instance, add initial? Careful with name order
+        new_conv = ConversationEditForm(request.POST, instance=conv)
+        if new_conv.is_valid():
+            new_conv.save()
+
+            conv_form = new_conv
+            conv = Conversation.objects.get(id=pk)
+            #you can also add old_conv to show a com a comparison
+
+    # Get all speeches linked to this
+    speeches = Speech.objects.filter(conversation=pk)
+
+
+    context = {
+
+        'pk' : pk,  #no need to be this way but i'm fed up
+        
+        'conv_form' : conv_form,
+        'conv' : conv,
+        #'old_conv' : old_conv
+
+        'speech_form' : speech_form,
+
+        'speeches' : speeches
+
+    }
+    return render(request,'site/forms/edit_conv.html', context)
+# -----------------------------------------------------
+
+
+
+# Create speech
+
+class ForkCreateForm(ModelForm): 
+    class Meta:
+            model = Speech
+            fields = [
+                'fork_question_en_A',
+                'fork_question_pt_A',
+                'fork_question_es_A',
+                
+                'fork_question_en_B',
+                'fork_question_pt_B',
+                'fork_question_es_B',
+
+                'fork_question_en_C',
+                'fork_question_pt_C',
+                'fork_question_es_C',
+
+                'fork_question_en_D',
+                'fork_question_pt_D',
+                'fork_question_es_D',
+
+                'fork_question_en_E',
+                'fork_question_pt_E',
+                'fork_question_es_E',
+
+                'fork_question_en_F',
+                'fork_question_pt_F',
+                'fork_question_es_F',
+                ]
+
+
+def add_as_fork(og_speech,speech,conv): # pick what is useful and remove when you're done
+    # Register id keys on its places and checks if the chain of foreign keys can break
+
+    fork_validate = False
+
+    # arguments are speech objects
+    # if no slots on forks for that speech.
+    # write on speech.commentary and on og_speech.commentary.
+
+    if og_speech.has_fork is False and og_speech.next_speech is None: #if a honest mistake happened
+        og_speech.has_fork = fork_validate = True
+
+    else:
+        og_speech.comment = "[!! This speech should be a fork but it isn't !!]" + og_speech.comment
+        conv.description = "[!! This conversation has blank fork, check their comments !!]  " + conv.description
+        speech.comment = "[!! This speech lis linked to an empty form !!] " + speech.comment
+
+        # Any changes to correct this are better doe manually. At best write a log in here.
+
+    if fork_validate:
+        fork_slots = [og_speech.fork_speech_AA, og_speech.fork_speech_BB,og_speech.fork_speech_CC,og_speech.fork_speech_DD,og_speech.fork_speech_EE,og_speech.fork_speech_FF]
+        found_a_fork = False
+        #already_a_fork = False
+        empty_slot = None
+
+        for slot in fork_slots:
+
+            if slot is speech.id:
+                #already_a_fork = True # just if you need it.
+                break
+            if slot is None:
+                empty_slot = slot
+                found_a_fork = True
+
+        if found_a_fork is False:
+            speech.comment = "[!! This links to a speech with too many forks for the game !!]" + speech.comment
+            conv.description = "[!! Some speeches have too many forks !!]" + conv.description
+        else:
+            empty_slot = speech.id
+
+    og_speech.save()
+    conv.save()
+    speech.save()
+
+def og_validate_speech(conv_pk,form,reply_to=None): # Pick what is useful and delete after
+    # assumes post was confirmed
+    # NEEDS a form request from post, and that the form was valid
+        # It does check form.is_valid here, but just throws a wrench so I can wake up about it, in case
+        # I call this without doing it.
+    # Needs a conversation to exist beforehand
+    # Reply_to can either be a None or a Speech.id
+    
+
+
+    # maybe make it optional for be speech pk o a second argument?
+    # assumes you got the pk from a get_object_or_404.
+    # Call would be like:
+    # if request.method == 'POST':
+    #   validate_speech(conv_pk, SpeechCreateForm(request.POST), speech_pk )
+    
+
+    conv = get_object_or_404(Conversation,id=conv_pk) #get conversation
+
+    if form.is_valid():
+        conv_speeches = Speech.objects.filter(conversation=pk) # get before having this one on the list
+        speech=form.save(commit=False)
+
+
+        if reply_to is not None: # If definitely know who you'r replying to.
+
+            og_speech = get_object_or_404(Speech,id=reply_to)
+
+            speech.previous_speech = reply_to
+
+            if (og_speech.has_fork is False) and (og_speech.next_speech is None or og_speech.next_speech is speech.id):
+                # this means it is a reply to something.
+                og_speech.next_speech = speech.id
+
+            else: # It will deal with it
+                add_as_fork(og_speech,speech,conv) # it will comment the problem there too
+
+            og_speech.save()
+            speech.save()
+
+        elif not conv_speeches.exists(): # if no other speeches, this is the first
+
+            speech.is_first = True
+            speech.save()
+
+        else: # ASSUMES THE CONVERSATION IS LINEAR, and this is a response.
+            first_speech = None
+            
+            for single_speech in conv_speeches: # Sorts to find a is_first
+
+                if single_speech.id is speech.id: continue # just good measure
+
+                if single_speech.is_first is True:
+                    next_chain = first_speech = single_speech.id
+            
+            # Once it knows where to start, it will loop the chain of foreign keys, looking
+            # for the last one, which will have the next_speech field as null.
+            # objects.get raises an exception in case the key is invalid for whatever reason.
+            # It also register if it ever finds a fork
+            #   (If there is ever a fork in a conversation, all following replies should have a reply_to key)
+
+            while next_chain is not None: # canibalize this for a chain verification
+                try: 
+                    next_speech = Speech.objects.get(id=next_chain)
+
+                    if next_speech.has_fork is True:
+                        next_speech.comment = f" {next_speech.comment} [!!  There shouldn't be forks in this talk something went wrong !!]"
+                        speech.comment = "[!! This was a linear reply but it got lost in a fork !!]"
+                        
+                        next_speech.save()
+                        speech.save()
+
+                        next_chain = None
+
+
+                    else:
+                        if next_speech.next_speech is None:
+                            next_speech.next_speech = speech.id
+                            speech.previous_speech = next_speech
+
+                            next_speech.save()
+                            speech.save()
+                        else:
+                            next_speech = next_speech.next_speech
+
+
+
+                except:
+                    next_chain = None
+                    speech.comment = "[!! This speech was supposed to be on the end of a linear line, but something went wrong !!]]"
+                
+            speech.save()
+
+            # if all the options have a fork, write a comment on this and save
+            # maybe update the models on rogue lost speches
+
+
+        speech.save()
+        return speech
+    return False # This will throw an ugly error
+
+def linear_check(first_speech):
+    print("You should canibalize the while loop from og_validate_speech")
+
+def validate_speech(speech,conv): #both arguments have to be models
+
+    if speech.previous_speech is None:  #possible new linear
+        if conv.total_speeches == 0: # if conv is empty
+            speech.is_first = True
+        elif conv.is_linear is True:
+            
+            conv_speeches = Speech.objects.filter(conversation=conv.id)
+            first_speech = None
+            
+            for single_speech in conv_speeches:
+                if single_speech.has_fork is True: # should be linear
+                    break
+
+                if single_speech.is_first is True:
+                    first_speech = single_speech
+                    break
+
+
+            if first_speech is None: # if you can't even find the first, you have bigger problems
+                conv.broken_chain
+            else:  
+                if first_speech.next_speech is None:
+                    speech.save()
+                    first_speech.next_speech = speech
+                    first_speech.save()
+                else:
+                    linear_check(first_speech) # should debug itself
+                    conv.broken_chain = True # remove that when you build last func
+
+        else:   # if you have no previous speech, and it is a fork...
+                # and this doesn't know where it should be...
+                # You should have dealt with that on the form
+            conv.broken_chain = True
+        
+    else:  #if it has a previous speech assigned
+        try:
+            reply_to = get_object_or_404(Speech, id=speech.previous_speech)
+        except:
+            print(f"The key {speech.previous_speech} this form is assigned to does not exist.")
+        
+        if reply_to.has_fork is False: # Checks if previous is linear
+            if reply_to.next_speech is None:
+                speech.save()
+                reply_to.next_speech = speech
+            else:
+                #you should throw an error but let's be nice for now until you split convs
+                print("uuuh... There was something in here already")
+                conv.broken_chain = True
+
+        else: # Loops through the fork fields until it finds a place
+            speech.is_fork = True
+            conv.is_linear=False
+            fields = get_fork_fields(reply_to,"ids")
+            
+            found = False 
+            for key, field in fields.keys():
+                if field == speech.id: #if it was already assigned
+                    speech.fork_letter = key
+                    found = True
+                    break
+                elif field is None:
+                    speech.fork_letter = key
+                    speech.save()
+                    setattr(reply_to, key, speech.id) #will set the field
+                    found = True
+                    break
+            if found is False:
+                conv.broken_chain = True
+
+        reply_to.save()
+
+    # Call function to name convention
+
+    if speech.line_hash is None:
+        speech = create_hash(speech)
+
+    # generate line hash
+    conv.total_speeches += 1
+
+    conv.save()
+    speech.save()
+
+    return speech
+
+def create_speech_process(request,pk): # saves speech, returns saved speech or None
+    conv = get_object_or_404(Conversation,id=pk)
+
+    is_fork = False
+    speech = None
+
+    if request.method == 'POST':
+        form = SpeechCreateForm(request.POST)
+
+        if form.is_valid():
+            speech =form.save(commit=False)
+            
+            speech = validate_speech(speech,conv)
+        return render(
+            request,'site/htmx/single_speech.html',
+            {'speech' : speech, 'is_fork' : is_fork }) # will be replaced with render
+
+    print("'create_speech_view' is gonna return None")
+    return None
+
+
+def edit_speech_process(request,speech_pk):
+    # Gets form with said speech, adds all its values as default.
+    print("")
+    
+
+
 def fork_question_process(request,speech_pk):
     print("Before pk test")
     # this register the fork
@@ -688,43 +775,9 @@ def fork_question_process(request,speech_pk):
     if request.method == 'POST':
         form = ForkCreateForm(request.POST, instance=speech)
 
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print( "ok so far?")
         if form.is_valid():
 
-            print(" ")
-            print(" ")
-            print(" ")
-            print(" ")
-            print(" ")
-            print(" ")
-            print(" ")
-            print(" ")
-            print(" ")
-            print( "Form was valid?")
-
-
-
-
             form.save()
-            print(" ")
-            print(" ")
-            print(" ")
-            print(" ")
-            print(" ")
-            print(" ")
-            print( "Form was saved?")
-
             msg = "the fork worked?"
 
             #speech.has_fork=True
@@ -787,7 +840,9 @@ def get_fork_question(request,speech_pk):
 
     
 
-# -----------------
+# ----------------- Downloads
+
+
 
 # this one is not registered, but have tested them before
 def download_conv_only(request):
@@ -913,6 +968,13 @@ def download_all(request):
             to_json = speech.__dict__
             fork_fields = get_fork_fields(speech,"ids")
             
+            # I know I know, i could get them all in a single query, i'll deal with it later.
+
+            to_json['speaker_en'] = Character.objects.filter(id=speech.speaker).values_list("name")
+            to_json['speaker_pt'] = Character.objects.filter(id=speech.speaker).values_list("name_pt")
+            to_json['speaker_es'] = Character.objects.filter(id=speech.speaker).values_list("name_es")
+
+
             to_json['next_speech'] = Speech.objects.filter(id=speech.next_speech).values_list("name")
             to_json['previous_speech'] = Speech.objects.filter(id=speech.previous_speech).values_list("name")
 
