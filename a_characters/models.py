@@ -103,7 +103,11 @@ class Conversation(models.Model):
     is_linear = models.BooleanField(default=True)   #Signals if it it is linear.
 
     quest_step = models.PositiveIntegerField(default=0) #useful to order several quests.
+    
+    
     total_speeches = models.PositiveIntegerField(default=0) #counter of quests
+    #total_speeches is more problem than it is worth, remove it.
+    
     broken_chain = models.BooleanField(default=False)
 
     my_code = models.TextField(blank=True, null=True)
@@ -165,6 +169,8 @@ class Speech(models.Model):
 
     speaker = models.ForeignKey(    # NPC that says it
         Character,
+        blank = True,
+        null=True,
         on_delete = models.PROTECT
     )
 
@@ -209,6 +215,10 @@ class Speech(models.Model):
     is_fork = models.BooleanField(default=False) # WAY easier to track. If it is reply to a Fork, it is false.
     #fork_letter = models.CharField(max_length = 16, null=True, blank=True)
     fork_letter = models.TextField(max_length=15,blank=True, null=True)
+    next_is_cycled = models.BooleanField(default=False) # avoids infinite loops
+        # If the next_speech property is not a direct fork, but another speech for cycled dialogue
+        
+
 
     previous_speech = models.ForeignKey(    # Make the register make sure this is empty if it is marked as first.
         'self',

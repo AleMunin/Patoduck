@@ -1,190 +1,28 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+
 from .models import *
+from .forms import *
+from .tools import *
+from .downloads import *
+
 from django import forms 
 from django.forms import ModelForm  # because apparently importing forms or * was not working.
 
-import json, io, zipfile
-import secrets #for hash
 from django.http import JsonResponse, HttpResponse
+
+
+
 
 # Create your views here.
 
 # RUles of Thumb:
 
-# Forms for those models are near their respective main views
 # "process" functions can be registered as views, but are usually just HTMX responses
 # functions not called views or processes are usually called by others
 
 
-# Tools
-
-
-def get_fork_fields(obj,language_group): # management of my own madness
-    speech = obj
-
-    match language_group:
-
-        case "all": # does not return the ids, though
-            my_initials = { #thank god alt + click can copy paste properly
-            
-                'fork_question_en_A' : speech.fork_question_en_A, 
-                'fork_question_pt_A' : speech.fork_question_pt_A, 
-                'fork_question_es_A' : speech.fork_question_es_A, 
-                
-                'fork_question_en_B' : speech.fork_question_en_B,
-                'fork_question_pt_B' : speech.fork_question_pt_B,
-                'fork_question_es_B' : speech.fork_question_es_B,
-
-                'fork_question_en_C' : speech.fork_question_en_C,
-                'fork_question_pt_C' : speech.fork_question_pt_C,
-                'fork_question_es_C' : speech.fork_question_es_C,
-
-                'fork_question_en_D' : speech.fork_question_en_D,
-                'fork_question_pt_D' : speech.fork_question_pt_D,
-                'fork_question_es_D' : speech.fork_question_es_D,
-
-                'fork_question_en_E' : speech.fork_question_en_E,
-                'fork_question_pt_E' : speech.fork_question_pt_E,
-                'fork_question_es_E' : speech.fork_question_es_E,
-
-                'fork_question_en_F' : speech.fork_question_en_F,
-                'fork_question_pt_F' : speech.fork_question_pt_F,
-                'fork_question_es_F' : speech.fork_question_es_F,
-
-            }
-
-        case "ids":
-            my_initials = {
-                "fork_speech_AA" : speech.fork_speech_AA,
-                "fork_speech_BB" : speech.fork_speech_BB,
-                "fork_speech_CC" : speech.fork_speech_CC,
-                "fork_speech_DD" : speech.fork_speech_DD,
-                "fork_speech_EE" : speech.fork_speech_EE,
-                "fork_speech_FF" : speech.fork_speech_FF,
-            }
-
-        case "en":
-            my_initials = { #thank god alt + click can copy paste properly
-            
-                'fork_question_en_A' : speech.fork_question_en_A, 
-                
-                'fork_question_en_B' : speech.fork_question_en_B,
-                
-                'fork_question_en_C' : speech.fork_question_en_C,
-                
-
-                'fork_question_en_D' : speech.fork_question_en_D,
-
-                'fork_question_en_E' : speech.fork_question_en_E,
-
-                'fork_question_en_F' : speech.fork_question_en_F,
-                
-
-            }
-
-        case "pt":
-            my_initials = { #thank god alt + click can copy paste properly
-            
-                'fork_question_pt_A' : speech.fork_question_pt_A, 
-                
-                'fork_question_pt_B' : speech.fork_question_pt_B,
-
-                'fork_question_pt_C' : speech.fork_question_pt_C,
-
-                'fork_question_pt_D' : speech.fork_question_pt_D,
-
-                'fork_question_pt_E' : speech.fork_question_pt_E,
-
-                'fork_question_pt_F' : speech.fork_question_pt_F,
-
-            }
-
-        case "es":
-            my_initials = { #thank god alt + click can copy paste properly
-             
-                'fork_question_es_A' : speech.fork_question_es_A, 
-                
-                'fork_question_es_B' : speech.fork_question_es_B,
-
-
-                'fork_question_es_C' : speech.fork_question_es_C,
-
-                'fork_question_es_D' : speech.fork_question_es_D,
-
-
-                'fork_question_es_E' : speech.fork_question_es_E,
-
-                'fork_question_es_F' : speech.fork_question_es_F,
-
-            }
-        case "A":
-            my_initials = { #thank god alt + click can copy paste properly
-            
-                'fork_question_en_A' : speech.fork_question_en_A, 
-                'fork_question_pt_A' : speech.fork_question_pt_A, 
-                'fork_question_es_A' : speech.fork_question_es_A, 
-
-            }
-        case "B":
-            my_initials = { #thank god alt + click can copy paste properly
-            
-                
-                'fork_question_en_B' : speech.fork_question_en_B,
-                'fork_question_pt_B' : speech.fork_question_pt_B,
-                'fork_question_es_B' : speech.fork_question_es_B,
-
-            }
-        case "C":
-            my_initials = { #thank god alt + click can copy paste properly
-
-                'fork_question_en_C' : speech.fork_question_en_C,
-                'fork_question_pt_C' : speech.fork_question_pt_C,
-                'fork_question_es_C' : speech.fork_question_es_C,
-
-            }
-        case "D":
-            my_initials = { #thank god alt + click can copy paste properly
-
-                'fork_question_en_D' : speech.fork_question_en_D,
-                'fork_question_pt_D' : speech.fork_question_pt_D,
-                'fork_question_es_D' : speech.fork_question_es_D,
-
-            }
-        case "E":
-            my_initials = { #thank god alt + click can copy paste properly
-
-
-                'fork_question_en_E' : speech.fork_question_en_E,
-                'fork_question_pt_E' : speech.fork_question_pt_E,
-                'fork_question_es_E' : speech.fork_question_es_E,
-
-            }
-        case "F":
-            my_initials = { #thank god alt + click can copy paste properly
-
-                'fork_question_en_F' : speech.fork_question_en_F,
-                'fork_question_pt_F' : speech.fork_question_pt_F,
-                'fork_question_es_F' : speech.fork_question_es_F,
-
-            }
-    return my_initials
-
-
-def create_hash(speech):    #generate hexadecimal of 6 digits and checks if it is unique, DOES NOT save.
-    unique = False
-    hex = secrets.token_hex(3)
-    while unique is False:
-        if not Speech.objects.filter(line_hash=hex):
-            unique = True
-        else:
-            hex =  secrets.token_hex(3)
-    else:
-        speech.line_hash = hex
-        return speech
-
-
-# FULL PAGE VIEWS
+# FULL PAGE VIEWS ====================================================================
 
 def home_view(request):
 
@@ -207,7 +45,7 @@ def home_view(request):
 
     return render(request,'site/home.html', context )
 
-# LISTS
+# PAGE LISTERS ====================================================================
 
 def all_char_view(request):
 
@@ -243,18 +81,11 @@ def all_conv_view(request):
     return render(request, 'site/all_conv.html', { "convs" : all_conv, "total_conv" : total_convs } )
 
 
-
-# Form Views ============================================================
+# CRUD Views ====================================================================
 
 # Character ----------------------------------------------------
 
-class CharCreateForm(ModelForm):
-    class Meta:
-        model = Character
-        fields = '__all__'
-
-
-def character_create_view(request):
+def character_create_view(request): #creates form or save form for Character
     form = CharCreateForm()
 
     if request.method == 'POST':
@@ -265,15 +96,9 @@ def character_create_view(request):
 
     return render(request,'site/forms/char/create_char.html', {'form' : form })
 
-
 # Location ----------------------------------------------------
 
-class LocationCreateForm(ModelForm):
-    class Meta:
-        model = Location
-        fields = '__all__'
-
-def location_create_view(request):
+def location_create_view(request): #creates form or save form for Location
 
     if request.method == 'POST':
         form = LocationCreateForm(request.POST)
@@ -287,17 +112,10 @@ def location_create_view(request):
     }
     return render(request, 'site/forms/loc/create_location.html', context)
 
-
-
     
 # Quest -----------------------------------------------------
 
-class QuestCreateForm(ModelForm):
-    class Meta:
-        model = Quest
-        fields = '__all__'
-
-def quest_create_view(request):
+def quest_create_view(request): #creates form or save form for Quest
     form = QuestCreateForm()
 
     if request.method == 'POST':
@@ -308,101 +126,7 @@ def quest_create_view(request):
 
     return render(request,'site/forms/create_quest.html', {'form' : form })
 
-
-# Conversation & Speeches -----------------------------------------------------
-
-class ConversationCreateForm(ModelForm):
-    class Meta:
-        model = Conversation
-        fields = '__all__'
-
-class ConversationEditForm(ModelForm): #edits the conversation, not the speeches
-    class Meta:
-        model = Conversation
-        fields = ['title', 'is_quest', 'quest', 'quest_step', 'is_cutscene', 'condition','description']
-        labels = {
-            'body' : '',
-        }
-
-    # CONDITIONALS
-    def __init__(self, *args, **kwargs): # there would be probably a better way but i can't be bothered
-        super(ConversationEditForm, self).__init__(*args, **kwargs) #inheritance beurocracy
-
-        #Those will toggle when "is quest is selected"
-        self.fields['is_quest'].widget.attrs.update({'id': 'is_quest_conv'})
-        self.fields['quest'].widget.attrs.update({
-            'id'   : 'quest_select',
-            'class': 'hidden_for_now'
-            })
-        self.fields['quest_step'].widget.attrs.update({
-            'id'   : 'quest_step',
-            'class': 'hidden_for_now'
-            })
-        
-
-
-class SpeechCreateForm(ModelForm):
-    class Meta:
-        model = Speech
-        fields = '__all__' #maybe remove that because we don't want the name or conversation
-
-    #this way I don't need to know the default field type to add class
-
-    def __init__(self, *args, **kwargs): # there would be probably a better way but i can't be bothered
-        super(SpeechCreateForm, self).__init__(*args, **kwargs) #inheritance beurocracy
-
-        # Regular
-
-        self.fields['name'].widget.attrs.update({'class': 'speech_name'})
-
-        # Hidden
-
-        self.fields['txt_es'].widget.attrs.update({'class': 'speech_name hide_annoying_parent'})
-
-        self.fields['previous_speech'].widget.attrs.update({'class': 'speech_name hide_annoying_parent'})
-        self.fields['next_speech'].widget.attrs.update({'class': 'next_speech hide_annoying_parent'})
-
-        self.fields['fork_question_en_A'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
-        self.fields['fork_question_pt_A'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
-        self.fields['fork_question_es_A'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
-
-        self.fields['fork_speech_AA'].widget.attrs.update({'class': 'fork_A hide_annoying_parent'})
-
-        self.fields['fork_question_en_B'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
-        self.fields['fork_question_pt_B'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
-        self.fields['fork_question_es_B'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
-
-        self.fields['fork_speech_BB'].widget.attrs.update({'class': 'fork_B hide_annoying_parent'})
-
-        self.fields['fork_question_en_C'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
-        self.fields['fork_question_pt_C'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
-        self.fields['fork_question_es_C'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
-
-        self.fields['fork_speech_CC'].widget.attrs.update({'class': 'fork_C hide_annoying_parent'})
-
-        self.fields['fork_question_en_D'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
-        self.fields['fork_question_pt_D'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
-        self.fields['fork_question_es_D'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
-
-        self.fields['fork_speech_DD'].widget.attrs.update({'class': 'fork_D hide_annoying_parent'})
-
-        self.fields['fork_question_en_E'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
-        self.fields['fork_question_pt_E'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
-        self.fields['fork_question_es_E'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
-
-        self.fields['fork_speech_EE'].widget.attrs.update({'class': 'fork_E hide_annoying_parent'})
-
-        self.fields['fork_question_en_F'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
-        self.fields['fork_question_pt_F'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
-        self.fields['fork_question_es_F'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
-
-        self.fields['fork_speech_FF'].widget.attrs.update({'class': 'fork_F hide_annoying_parent'})
-                                                 
-        # hide_annoying_parent and Read Only 
-        # tried and didn't work, will deal with it later.
-        self.fields['conversation'].widget.attrs.update({'class': 'speech_conv hide_annoying_parent'})
-
-
+# Conversation -----------------------------------------------------
 
 def conversation_create_view(request):
     #form = ConversationCreateForm()
@@ -418,7 +142,6 @@ def conversation_create_view(request):
     else:
         form = ConversationCreateForm()
 
-
     return render(request,'site/forms/create_conversation.html', {'form' : form })
 
 
@@ -426,7 +149,8 @@ def edit_conv_view(request,pk):
     print("")
     
     conv = Conversation.objects.get(id=pk)
-    conv_name = f"{conv.title} Speech []"
+    #conv_name = f"{conv.title} Speech []"
+    conv_name = create_name(conv)
 
     conv_form = ConversationEditForm(instance=conv)
 
@@ -469,276 +193,10 @@ def edit_conv_view(request,pk):
 
     }
     return render(request,'site/forms/edit_conv.html', context)
-# -----------------------------------------------------
 
+# Speeches -----------------------------------------------------
 
-
-# Create speech
-
-class ForkCreateForm(ModelForm): 
-    class Meta:
-            model = Speech
-            fields = [
-                'fork_question_en_A',
-                'fork_question_pt_A',
-                'fork_question_es_A',
-                
-                'fork_question_en_B',
-                'fork_question_pt_B',
-                'fork_question_es_B',
-
-                'fork_question_en_C',
-                'fork_question_pt_C',
-                'fork_question_es_C',
-
-                'fork_question_en_D',
-                'fork_question_pt_D',
-                'fork_question_es_D',
-
-                'fork_question_en_E',
-                'fork_question_pt_E',
-                'fork_question_es_E',
-
-                'fork_question_en_F',
-                'fork_question_pt_F',
-                'fork_question_es_F',
-                ]
-
-
-def add_as_fork(og_speech,speech,conv): # pick what is useful and remove when you're done
-    # Register id keys on its places and checks if the chain of foreign keys can break
-
-    fork_validate = False
-
-    # arguments are speech objects
-    # if no slots on forks for that speech.
-    # write on speech.commentary and on og_speech.commentary.
-
-    if og_speech.has_fork is False and og_speech.next_speech is None: #if a honest mistake happened
-        og_speech.has_fork = fork_validate = True
-
-    else:
-        og_speech.comment = "[!! This speech should be a fork but it isn't !!]" + og_speech.comment
-        conv.description = "[!! This conversation has blank fork, check their comments !!]  " + conv.description
-        speech.comment = "[!! This speech lis linked to an empty form !!] " + speech.comment
-
-        # Any changes to correct this are better doe manually. At best write a log in here.
-
-    if fork_validate:
-        fork_slots = [og_speech.fork_speech_AA, og_speech.fork_speech_BB,og_speech.fork_speech_CC,og_speech.fork_speech_DD,og_speech.fork_speech_EE,og_speech.fork_speech_FF]
-        found_a_fork = False
-        #already_a_fork = False
-        empty_slot = None
-
-        for slot in fork_slots:
-
-            if slot is speech.id:
-                #already_a_fork = True # just if you need it.
-                break
-            if slot is None:
-                empty_slot = slot
-                found_a_fork = True
-
-        if found_a_fork is False:
-            speech.comment = "[!! This links to a speech with too many forks for the game !!]" + speech.comment
-            conv.description = "[!! Some speeches have too many forks !!]" + conv.description
-        else:
-            empty_slot = speech.id
-
-    og_speech.save()
-    conv.save()
-    speech.save()
-
-def og_validate_speech(conv_pk,form,reply_to=None): # Pick what is useful and delete after
-    # assumes post was confirmed
-    # NEEDS a form request from post, and that the form was valid
-        # It does check form.is_valid here, but just throws a wrench so I can wake up about it, in case
-        # I call this without doing it.
-    # Needs a conversation to exist beforehand
-    # Reply_to can either be a None or a Speech.id
-    
-
-
-    # maybe make it optional for be speech pk o a second argument?
-    # assumes you got the pk from a get_object_or_404.
-    # Call would be like:
-    # if request.method == 'POST':
-    #   validate_speech(conv_pk, SpeechCreateForm(request.POST), speech_pk )
-    
-
-    conv = get_object_or_404(Conversation,id=conv_pk) #get conversation
-
-    if form.is_valid():
-        conv_speeches = Speech.objects.filter(conversation=pk) # get before having this one on the list
-        speech=form.save(commit=False)
-
-
-        if reply_to is not None: # If definitely know who you'r replying to.
-
-            og_speech = get_object_or_404(Speech,id=reply_to)
-
-            speech.previous_speech = reply_to
-
-            if (og_speech.has_fork is False) and (og_speech.next_speech is None or og_speech.next_speech is speech.id):
-                # this means it is a reply to something.
-                og_speech.next_speech = speech.id
-
-            else: # It will deal with it
-                add_as_fork(og_speech,speech,conv) # it will comment the problem there too
-
-            og_speech.save()
-            speech.save()
-
-        elif not conv_speeches.exists(): # if no other speeches, this is the first
-
-            speech.is_first = True
-            speech.save()
-
-        else: # ASSUMES THE CONVERSATION IS LINEAR, and this is a response.
-            first_speech = None
-            
-            for single_speech in conv_speeches: # Sorts to find a is_first
-
-                if single_speech.id is speech.id: continue # just good measure
-
-                if single_speech.is_first is True:
-                    next_chain = first_speech = single_speech.id
-            
-            # Once it knows where to start, it will loop the chain of foreign keys, looking
-            # for the last one, which will have the next_speech field as null.
-            # objects.get raises an exception in case the key is invalid for whatever reason.
-            # It also register if it ever finds a fork
-            #   (If there is ever a fork in a conversation, all following replies should have a reply_to key)
-
-            while next_chain is not None: # canibalize this for a chain verification
-                try: 
-                    next_speech = Speech.objects.get(id=next_chain)
-
-                    if next_speech.has_fork is True:
-                        next_speech.comment = f" {next_speech.comment} [!!  There shouldn't be forks in this talk something went wrong !!]"
-                        speech.comment = "[!! This was a linear reply but it got lost in a fork !!]"
-                        
-                        next_speech.save()
-                        speech.save()
-
-                        next_chain = None
-
-
-                    else:
-                        if next_speech.next_speech is None:
-                            next_speech.next_speech = speech.id
-                            speech.previous_speech = next_speech
-
-                            next_speech.save()
-                            speech.save()
-                        else:
-                            next_speech = next_speech.next_speech
-
-
-
-                except:
-                    next_chain = None
-                    speech.comment = "[!! This speech was supposed to be on the end of a linear line, but something went wrong !!]]"
-                
-            speech.save()
-
-            # if all the options have a fork, write a comment on this and save
-            # maybe update the models on rogue lost speches
-
-
-        speech.save()
-        return speech
-    return False # This will throw an ugly error
-
-def linear_check(first_speech):
-    print("You should canibalize the while loop from og_validate_speech")
-
-def validate_speech(speech,conv): #both arguments have to be models
-
-    if speech.previous_speech is None:  #possible new linear
-        if conv.total_speeches == 0: # if conv is empty
-            speech.is_first = True
-        elif conv.is_linear is True:
-            
-            conv_speeches = Speech.objects.filter(conversation=conv.id)
-            first_speech = None
-            
-            for single_speech in conv_speeches:
-                if single_speech.has_fork is True: # should be linear
-                    break
-
-                if single_speech.is_first is True:
-                    first_speech = single_speech
-                    break
-
-
-            if first_speech is None: # if you can't even find the first, you have bigger problems
-                conv.broken_chain
-            else:  
-                if first_speech.next_speech is None:
-                    speech.save()
-                    first_speech.next_speech = speech
-                    first_speech.save()
-                else:
-                    linear_check(first_speech) # should debug itself
-                    conv.broken_chain = True # remove that when you build last func
-
-        else:   # if you have no previous speech, and it is a fork...
-                # and this doesn't know where it should be...
-                # You should have dealt with that on the form
-            conv.broken_chain = True
-        
-    else:  #if it has a previous speech assigned
-        try:
-            reply_to = get_object_or_404(Speech, id=speech.previous_speech)
-        except:
-            print(f"The key {speech.previous_speech} this form is assigned to does not exist.")
-        
-        if reply_to.has_fork is False: # Checks if previous is linear
-            if reply_to.next_speech is None:
-                speech.save()
-                reply_to.next_speech = speech
-            else:
-                #you should throw an error but let's be nice for now until you split convs
-                print("uuuh... There was something in here already")
-                conv.broken_chain = True
-
-        else: # Loops through the fork fields until it finds a place
-            speech.is_fork = True
-            conv.is_linear=False
-            fields = get_fork_fields(reply_to,"ids")
-            
-            found = False 
-            for key, field in fields.keys():
-                if field == speech.id: #if it was already assigned
-                    speech.fork_letter = key
-                    found = True
-                    break
-                elif field is None:
-                    speech.fork_letter = key
-                    speech.save()
-                    setattr(reply_to, key, speech.id) #will set the field
-                    found = True
-                    break
-            if found is False:
-                conv.broken_chain = True
-
-        reply_to.save()
-
-    # Call function to name convention
-
-    if speech.line_hash is None:
-        speech = create_hash(speech)
-
-    # generate line hash
-    conv.total_speeches += 1
-
-    conv.save()
-    speech.save()
-
-    return speech
-
-def create_speech_process(request,pk): # saves speech, returns saved speech or None
+def create_speech_process(request,pk,dbug=False): # saves speech, returns saved speech or None
     conv = get_object_or_404(Conversation,id=pk)
 
     is_fork = False
@@ -749,44 +207,93 @@ def create_speech_process(request,pk): # saves speech, returns saved speech or N
 
         if form.is_valid():
             speech =form.save(commit=False)
+
+            validation = validate_new_speech(speech,conv) # This is wrong, should return false
+            
+            
+            if validation[0]:
+                
+                speech = validation[1]
+
+                speech.save()
+            
+                return render(  #returns for the htmx
+                    request,'site/htmx/single_speech.html',
+                    {'speech' : speech, 'is_fork' : is_fork }) # will be replaced with render
+            else:
+                #print speech_status?
+                #return HttpResponse(f"Well, {speech.name} was not valid.")
+                print("Something went wrong with validation of the speech")
+                return render(request,'site/htmx/errors/invalid_speech.html',{})
+
+        else:
+            print("")
+            print("Form was not valid")
+            pprint(f"Following errors\n {form.errors}")
+            return render(request,'site/htmx/errors/invalid_speech.html',{})
+        
+    else:
+        return HttpResponse("What were you thinking? This is not a post")
+        
+
+
+def create_fork_view(request,reply_pk,fork_letter,conv_pk): # Gets form 
+    reply_to = get_object_or_404(Speech,id=reply_pk)
+    conv = get_object_or_404(Conversation,id=conv_pk)
+
+    if request.method == 'POST':
+        form = SpeechCreateForm(request.POST)
+        if form.is_valid():
+            speech =form.save(commit=False)
             
             speech = validate_speech(speech,conv)
-        return render(
+        return render(  #returns for the htmx
             request,'site/htmx/single_speech.html',
             {'speech' : speech, 'is_fork' : is_fork }) # will be replaced with render
 
-    print("'create_speech_view' is gonna return None")
-    return None
+    else:
+        initial_values = {
+            "previous_speech" : reply_to.id, #if this fails just use full object
+            "is_fork" : True,
+            "fork_letter" : fork_letter,
+            }
+
+        form = SpeechCreateForm(initials=initial_values)
+        
+        # return the form for create speech
 
 
-def edit_speech_process(request,speech_pk):
-    # Gets form with said speech, adds all its values as default.
-    print("")
-    
 
+# all conv view
+# queries ONLY non-fork ones.
+# if has_fork, loops on that to put the loops on the list[], directly after the "parent"
 
-def fork_question_process(request,speech_pk):
-    print("Before pk test")
-    # this register the fork
+# fork_create_view
+
+# FORK QUESTION HANDLING INSIDE SPEECH -----------------------------------------------------
+
+def fork_question_process(request,speech_pk): # Processes the Fork Question FORM
+
     speech = get_object_or_404(Speech,id=speech_pk)
-
-    print("AFTER pk test")
+    conv = get_object_or_404(Conversation,id=speech.conversation)
 
     if request.method == 'POST':
         form = ForkCreateForm(request.POST, instance=speech)
 
         if form.is_valid():
-
             form.save()
-            msg = "the fork worked?"
+            speech.has_fork=True
+            speech.save()
+            conv.is_linear = False
+            conv.save()
 
-            #speech.has_fork=True
-            #speech.save() #they deal with the same object, but has_fork is not a field
+            msg = "The fork worked" # delete this out of context
+            
             return render(request,'site/htmx/fork_speech_form.html', { 'speech' : speech, 'msg' : msg }) 
         else:
             print("the form is NOOOOOOOOOOOOOOOOOOOOOOT VALID \n\n\n")
 
-def get_fork_question(request,speech_pk):
+def get_fork_question(request,speech_pk): # Returns the FORM for Fork Question.
     # gets speech form where speech_pk is the one being replied to
     # This form is merely to use the fork fields.
     # The render once it is accepted immediately calls a branch_speech_process fork
@@ -837,175 +344,4 @@ def get_fork_question(request,speech_pk):
 
 
         return render(request,'site/htmx/fork_speech_form.html', context) 
-
-    
-
-# ----------------- Downloads
-
-
-
-# this one is not registered, but have tested them before
-def download_conv_only(request):
-
-    queryset = Conversation.objects.all()
-    data = list(queryset.values())
-
-    json_data = json.dumps(data, indent=4, sort_keys=True, default=str)
-
-    response = HttpResponse(
-        json_data, 
-        content_type='application/json'
-        )
-    response['Content-Disposition'] = 'attachment; filename="data.json"'
-
-    
-    return response
-
-
-def download_all_flat(request): #json dumps individually. Does not make formats nice like names instead of id-keys and so on
-
-    all_convs = Conversation.objects.all()
-    #data = list(convs.values())
-
-    all_json = []
-    buffer = io.BytesIO() # will hold file in memory
-
-    for conv in all_convs:
-        conv_json = []
-        speech_count = 0
-
-        conv_json.append(f"{conv.title}/000--(CONV)--{conv.title}.json")
-        conv_json.append(json.dumps(conv.__dict__, indent=4, sort_keys=True, default=str))
-
-        speeches = Speech.objects.filter(conversation=conv.id)
-
-        if not speeches:    #if there are no speeches, we skip saving the conv to json.
-            continue
-
-        all_json.append(conv_json)
-
-
-        for speech in speeches:
-
-            speech_json = []
-            if speech.is_first is True:
-                file_name = f"000--(START)--{speech.name}"
-            elif speech.has_fork:
-
-                file_name = f"0{speech_count}--(FORKS)--{speech.name}"
-            else:
-                file_name = f"0{speech_count}--{speech.name}"
-            
-            speech_count += 1
-
-            file_path = f'{conv.title}/{file_name}.json'
-            #sanitize dialogue here
-            # json dump
-
-            speech_json.append(file_path)
-            speech_json.append(json.dumps(speech.__dict__, indent=4, sort_keys=True, default=str))
-            
-            all_json.append(speech_json)
-
-    with zipfile.ZipFile(buffer,'w') as zip:
-        for json_dict in all_json:
-            zip.writestr(json_dict[0],json_dict[1])
-
-    buffer.seek(0)
-
-    #json_data = json.dumps(data, indent=4, sort_keys=True, default=str)
-
-    response = HttpResponse(
-        buffer, 
-        content_type='application/zip'
-        )
-    response['Content-Disposition'] = 'attachment; filename="all_conv.zip"'
-
-    
-    return response
-
-
-# registered 
-def download_all(request):
-
-    all_convs = Conversation.objects.all()
-    #data = list(convs.values())
-
-    all_json = []
-    buffer = io.BytesIO() # will hold file in memory
-
-    for conv in all_convs:
-        conv_json = []
-        speech_count = 0
-
-        conv_json.append(f"{conv.title}/000--(CONV)--{conv.title}.json")
-        conv_json.append(json.dumps(conv.__dict__, indent=4, sort_keys=True, default=str))
-
-        speeches = Speech.objects.filter(conversation=conv.id)
-
-        if not speeches:    #if there are no speeches, we skip saving the conv to json.
-            continue
-
-        all_json.append(conv_json)
-
-
-        for speech in speeches:
-
-            speech_json = []
-            if speech.is_first is True:
-                file_name = f"000--(DIA)(START)--{speech.name}"
-            elif speech.has_fork:
-
-                file_name = f"0{speech_count}--(DIA)(FORKS)--{speech.name}"
-            else:
-                file_name = f"0{speech_count}--(DIA)--{speech.name}"
-            
-            speech_count += 1
-
-            file_path = f'{conv.title}/{file_name}.json'
-            #sanitize dialogue here
-            
-            to_json = speech.__dict__
-            fork_fields = get_fork_fields(speech,"ids")
-            
-            # I know I know, i could get them all in a single query, i'll deal with it later.
-
-            to_json['speaker_en'] = Character.objects.filter(id=speech.speaker).values_list("name")
-            to_json['speaker_pt'] = Character.objects.filter(id=speech.speaker).values_list("name_pt")
-            to_json['speaker_es'] = Character.objects.filter(id=speech.speaker).values_list("name_es")
-
-
-            to_json['next_speech'] = Speech.objects.filter(id=speech.next_speech).values_list("name")
-            to_json['previous_speech'] = Speech.objects.filter(id=speech.previous_speech).values_list("name")
-
-            for key,field in fork_fields.items():
-                if field is None:
-                    continue
-                to_json[key] = Speech.objects.filter(id=field).values_list("name")
-
-            
-            # json dump
-
-            speech_json.append(file_path)
-            speech_json.append(json.dumps(to_json, indent=4, sort_keys=True, default=str))
-
-            
-            all_json.append(speech_json)
-
-    with zipfile.ZipFile(buffer,'w') as zip:
-        for json_dict in all_json:
-            zip.writestr(json_dict[0],json_dict[1])
-
-    buffer.seek(0)
-
-    #json_data = json.dumps(data, indent=4, sort_keys=True, default=str)
-
-    response = HttpResponse(
-        buffer, 
-        content_type='application/zip'
-        )
-    response['Content-Disposition'] = 'attachment; filename="all_conv.zip"'
-
-    
-    return response
 
