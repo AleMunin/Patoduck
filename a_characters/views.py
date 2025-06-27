@@ -11,8 +11,14 @@ from django.forms import ModelForm  # because apparently importing forms or * wa
 
 from django.http import JsonResponse, HttpResponse
 
+# TODO: Fork Form & processing, Cycle-Back protocol, Edit, Deletion, Splitting, User Autorization
 
 
+# ? Comentários tem cor
+# Comentário normal
+# TODO: 
+# * Comentário
+# ! Comentário
 
 # Create your views here.
 
@@ -25,8 +31,10 @@ from django.http import JsonResponse, HttpResponse
 # FULL PAGE VIEWS ====================================================================
 
 def home_view(request):
-
-    #This view will be called only for chars, later down the line
+    """
+    The home view is a simple count query of the database.
+    The HTMX requests on buttons are not processed here.
+    """
 
     chars = Character.objects.all()
     quests = Quest.objects.all()
@@ -54,7 +62,7 @@ def all_char_view(request):
     return render(request, 'site/all_char.html', { "chars" : all_char, "total_char" : total_char } )
 
 def all_location_view(request):
-
+    # TODO: check if locations are part of a quest? idk
     all_loc = Location.objects.all()
     total_loc= len(all_loc)
 
@@ -62,19 +70,17 @@ def all_location_view(request):
         "all_loc" : all_loc,
         "total_loc" : total_loc
     }
-
-    #check if conversations are part of a quest? idk
-
     return render(request, 'site/all_loc.html', context )
 
 def all_quest_view(request):
+    # TODO: Maybe list the number of characters in the quest, and steps?
     all_quests = Quest.objects.all()
     total_quest = len(all_quests)
 
     return render(request, 'site/all_quests.html', { "quests" : all_quests, "total_quest" : total_quest } )
 
 def all_conv_view(request):
-
+    # TODO: Maybe list the number of characters in the conversation.
     all_conv = Conversation.objects.values_list('title', 'id', 'is_quest', 'quest_step')
     total_convs = len(all_conv)
     
@@ -196,6 +202,33 @@ def edit_conv_view(request,pk):
 
 # Speeches -----------------------------------------------------
 
+def get_new_speech(request,conv_pk):    # Handles LINEAR conversation speeches form
+
+    conv = get_object_or_404(Conversation,id=conv_pk)
+
+    if request.method == 'POST':
+        if conv.is_linear:
+            initial_values = {
+                'conversation' : conv_pk,
+                'line_hash' : create_hash(), # ! Just do a better job here with a randomizer when the form is valid.
+                'name' : create_name(conv),
+                'txt_en' : "LOLOLOL"
+            }
+
+            form = SpeechLinearCreateForm(initial=initial_values) #SpeechCreateForm(initial=initial_values) can test with
+
+            context = {
+                'pk' : conv_pk,
+                'speech_form' : form
+            }
+
+            return render(request, 'site/forms/create_speech.html', context)
+        
+        else:
+            print(" !!!!! Conversation isn't linear anymore. You shouldn't be able to make this request")
+    else:
+        print(f"    !!!!! Non POST request asked for get_new_speech")
+
 def create_speech_process(request,pk,dbug=False): # saves speech, returns saved speech or None
     conv = get_object_or_404(Conversation,id=pk)
 
@@ -203,14 +236,14 @@ def create_speech_process(request,pk,dbug=False): # saves speech, returns saved 
     speech = None
 
     if request.method == 'POST':
-        form = SpeechCreateForm(request.POST)
+        form = SpeechLinearCreateForm(request.POST)
+
 
         if form.is_valid():
+            form.conversation = conv
             speech =form.save(commit=False)
-
+    
             validation = validate_new_speech(speech,conv) # This is wrong, should return false
-            
-            
             if validation[0]:
                 
                 speech = validation[1]
@@ -345,3 +378,24 @@ def get_fork_question(request,speech_pk): # Returns the FORM for Fork Question.
 
         return render(request,'site/htmx/fork_speech_form.html', context) 
 
+
+# def get_new_fork(request,speech_pk):
+
+#     reply_to = get_object_or_404(Speech, id=speech_pk)
+#     conv = get_object_or_404(Conversation, id=reply_to.conversation)
+
+#     initial_values = [
+#         "name": create_name(conv, reply_to),
+#         "is_fork" : True,
+#         "previous_speech" : speech_pk,
+#         "line_hash" : create_hash(),
+
+#     ]
+
+#     # * Before you exit:
+    
+    
+#     reply_to.has_fork = True 
+#     conv.is_linear = False # This has to be re-affirmed go here otherwise it can screw up vaidation
+#     reply_to.save()
+#     conv.save()

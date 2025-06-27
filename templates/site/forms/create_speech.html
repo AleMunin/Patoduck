@@ -1,17 +1,16 @@
 <form id="new_speech_form" 
-            class="hidden"
-            
+            _="on htmx:afterRequest remove me"
             hx-post=    "{% url 'create_speech' pk %}"
             hx-target=  "#all_conv_wrapp"
             hx-swap=    "beforeend"
             hx-on*:after-request=   "this.reset()"
-            
-        >
+        > <!--Testing hyperscript here, this is why reset is here too-->
 
             <fieldset class="">
                 {% csrf_token %}
                 {{ speech_form }}
-                <button> Save Changes
+                <button
+                > Save Changes
                 </button>
             </fieldset>
 </form>

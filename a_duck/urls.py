@@ -24,22 +24,24 @@ urlpatterns = [
     path('', home_view, name='home'),
 
     path('char', character_create_view, name='create_char'),
-    path('all-chars', all_char_view, name="all_char"),
+    path('all/chars', all_char_view, name="all_char"),
 
     path('location', location_create_view, name="create_location"),
-    path('all-loc', all_location_view, name="all_location"), 
+    path('all/loc', all_location_view, name="all_location"), 
 
     path('quest', quest_create_view, name='create_quest'),
-    path('all-quests', all_quest_view, name='all_quest'),
+    path('all/quests', all_quest_view, name='all_quest'),
 
 
     path('conv', conversation_create_view, name='create_conv'),
-    path('all-conv', all_conv_view, name='all_conv'),
+    path('all/conv', all_conv_view, name='all_conv'),
     path('edit_conv/<pk>/', edit_conv_view, name='edit_conv'), # use /<pk> on this
 
     #non pages, just htmx snippets
 
     #non pages, but redirecting functions
+
+    path('get-speech/<conv_pk>/', get_new_speech, name='get_speech_form'),
 
     path('speech-sent/<pk>/', create_speech_process, name='create_speech'),
 

@@ -323,7 +323,7 @@ def in_list (obj, obj_list): # checks if object is on list
 
 # GENERATION
 
-def create_hash(speech):    #generate hexadecimal of 6 digits and checks if it is unique, DOES NOT save.
+def create_hash(speech=None):    #generate hexadecimal of 6 digits and checks if it is unique, DOES NOT save.
     unique = False
     hex = secrets.token_hex(3)
     while unique is False:
@@ -332,8 +332,11 @@ def create_hash(speech):    #generate hexadecimal of 6 digits and checks if it i
         else:
             hex =  secrets.token_hex(3)
     else:
-        speech.line_hash = hex
-        return speech
+        if speech is not None:
+            speech.line_hash = hex
+            return speech
+        else:
+            return hex
     
 
 def create_name(conv,reply_to=None): # create names for speeches
@@ -586,15 +589,23 @@ def validate_new_speech(speech,conv,reply_to=None):
     valid = False
     bare_minimum = True
 
+
     #-------------------------------------
     # Minor safety checks
     if not isinstance(speech,Speech):
         print(f"!!!!! {speech} not a Speech")
         bare_minimum = False
 
+
     if not isinstance(conv,Conversation):
         print(f"!!!!! {conv} not a Conversation")
         bare_minimum = False
+
+    print("")
+    print(f" VALIDATING NACHOOOOOOOOOOOOOOOOOOS")
+    print("")
+    print(f"{speech.conversation}")
+
 
     if speech.conversation != conv:
         print(f"!!!!! {speech} is not assigned to {conv} but to {speech.conversation}")
@@ -608,9 +619,13 @@ def validate_new_speech(speech,conv,reply_to=None):
             print(f"    !!!!! Reply to does not share {conv}, it belongs to {reply_to.conversation}")
             bare_minimum = False
 
+
+
     if not bare_minimum:
         print(f"Somehow this didn't reach the bare minimum, returning false")
         return False, speech
+    
+
     #-------------------------------------
 
     # Minor adjustments (save conv.save only in the end)
@@ -695,6 +710,10 @@ def validate_new_speech(speech,conv,reply_to=None):
         
     if valid:
         print (f"    {speech} was valid and saved into the database.")
+
+        if speech.line_hash is None:
+            speech.line_hash = create_hash()
+
         speech.save() # this HAS to be repeated before so other things receive its pk
 
         conv.save() # avoid using this on the code, though

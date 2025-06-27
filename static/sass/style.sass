@@ -1,5 +1,15 @@
 // Mostly done by Caroline Varela, but she couldn't
 // be arsed to make a commit just for that
+
+
+// To run use: python manage.py sass static/sass/ static/css/ -g
+
+// BE WARNED: 
+//      1. The processor will absolute freak out if it doesn't have a space in between the data and the ":"
+//      2. The processor also does not like comments that are nested one level more than the next item. Seriously.
+
+    
+//                      No, It will not tell you that is the problem
     
 *
     margin: 0
@@ -18,8 +28,6 @@ nav,main
     padding: 20px
 
 
-        
-
 // General ones
 
 .hidden // SERIOUSLY DON'T TOUCH
@@ -33,8 +41,6 @@ nav,main
 
 .statistics //anything that shows numbers
     padding: 1px
-
-
 
 .list //Duh
 
@@ -70,8 +76,7 @@ nav,main
             padding: 10px
          
         &-checkbox
-            padding:10px
-
+            padding: 10px
 
 // Modes
 
@@ -91,7 +96,6 @@ nav,main
 
     //#edit_mode_conv
 
-    
 
 .form_wrapper
 
@@ -106,15 +110,13 @@ nav,main
                 h6
                     margin-bottom: 20px
                 
-                label:
+                label // Both vsCode and Sass seem to think the html tag is a class.
                     text-align: left
 
                 //div field
 
             .btn_show
                 margin: 10px
-
-            
 
             //Specifics:
 
@@ -127,24 +129,23 @@ nav,main
             //.field_pt
             //.field_es
 
-     .show_form //btn
+    .show_form //btn
         padding: 10px
 
-    
-       
 
 // Blocks
 
 .speech // general attributes
 
     &-title //it is a h5
-        margin:10px
+        margin: 10px
 
     &-print
 
         &-short
 
             &-data //info field
+                text-align: left
 
             b
                 text-align: left
@@ -163,8 +164,7 @@ nav,main
                 //.txt_pt
 
                 //.txt_es
-
-        
+   
 
             //.en_print
 
@@ -192,13 +192,11 @@ nav,main
         //&-fork
 
 
-
 .speech-individual //paralell to speech
     padding: 10px
 
 .speech-fork    //paralell to speech
     padding: 10px
-
 
 .conversation //.print
 
@@ -244,7 +242,8 @@ button
 .btn_show //hyperscript to toggle a .hidden
     border-radius: 2px
 
-.btn_show_wrap // Butons that show a big wrapper
+.btn_show_wrap // Buttons that show a big wrapper
+    border-radius: 2px
 
 .btn-edit //exclusively for edit toggles
     border-radius: 2px
@@ -255,9 +254,8 @@ button
     border-radius: 2px
 
 .btn_submit //any button that will update the page entirely (non-htmx)
-            //hopefully not used much.
-    border-radius: 2px
-
+    //test
+    border-radius: 2px //hopefully not used much.
 
 //Language specific, mostly selectors for hyperscript
 

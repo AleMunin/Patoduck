@@ -1,0 +1,180 @@
+@charset "UTF-8";
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+  font-family: "Times New Roman", Times, serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+nav, main {
+  padding: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+.all_container {
+  display: flex;
+}
+
+.wrapper {
+  display: flex;
+}
+
+.statistics {
+  padding: 1px;
+}
+
+.list-info-title {
+  margin-bottom: 20px;
+}
+
+.list-info p {
+  text-indent: 30px;
+}
+
+.list ul {
+  margin: 20px;
+}
+
+.list ul li::before {
+  content: "»";
+}
+
+.list-article-header {
+  padding: 10px;
+}
+
+.list-article-header h6 {
+  margin-bottom: 10px;
+}
+
+.list-article p {
+  text-indent: 15px;
+}
+
+.list-article-description {
+  padding: 10px;
+}
+
+.list-article-other {
+  padding: 10px;
+}
+
+.list-article-checkbox {
+  padding: 10px;
+}
+
+.print-label {
+  padding: 10px;
+}
+
+.form_wrapper .fork_form .fork_wrapper fieldset h6 {
+  margin-bottom: 20px;
+}
+
+.form_wrapper .fork_form .fork_wrapper fieldset label {
+  text-align: left;
+}
+
+.form_wrapper .fork_form .fork_wrapper .btn_show {
+  margin: 10px;
+}
+
+.form_wrapper .show_form {
+  padding: 10px;
+}
+
+.speech-title {
+  margin: 10px;
+}
+
+.speech-print-short-data {
+  text-align: left;
+}
+
+.speech-print-short b {
+  text-align: left;
+}
+
+.speech-print-translations .language_wrap .txt {
+  padding: 10px;
+}
+
+.speech-individual {
+  padding: 10px;
+}
+
+.speech-fork {
+  padding: 10px;
+}
+
+.conversation-title {
+  padding: 10px;
+}
+
+.conversation-short-data {
+  padding: 10px;
+}
+
+.conversation-long-title {
+  padding: 10px;
+}
+
+.conversation-long-data {
+  padding: 10px;
+}
+
+.quest {
+  padding: 10px;
+}
+
+.character {
+  padding: 10px;
+}
+
+.location {
+  padding: 10px;
+}
+
+button {
+  border-radius: 2px;
+}
+
+.btn_show {
+  border-radius: 2px;
+}
+
+.btn_show_wrap {
+  border-radius: 2px;
+}
+
+.btn-edit {
+  border-radius: 2px;
+}
+
+.btn_send {
+  border-radius: 2px;
+}
+
+.btn_submit {
+  border-radius: 2px;
+}
+
+.show_pt {
+  border-radius: 2px;
+}
+
+.show_es {
+  border-radius: 2px;
+}
+
+.show_en {
+  border-radius: 2px;
+}

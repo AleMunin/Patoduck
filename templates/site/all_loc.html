@@ -9,24 +9,18 @@
     <div class="list">
 
         <header class="list-info">
-
             <h6 class="list-info-title">
                 Here are all {{ total_loc }} the locations in the game
             </h6>
-
-            
         </header>
+
         <p>Here are all locations</p>
         
     </div>
     
-
-
-
     <ul>
         {% for loc in all_loc %}
         <li> {{ loc.name }} </li>
-        
         {% endfor %}
     </ul>
 

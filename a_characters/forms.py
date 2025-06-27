@@ -84,22 +84,27 @@ class ConversationEditForm(ModelForm): #edits the conversation, not the speeches
             })
         
 
-# class SpeechCreateForm(ModelForm):
-#     class Meta:
-#         model = Speech
-#         fields = [
-#             'name'
-#             'comment',
-#             'my_code',
-#             'txt_en',
-#             'txt_pt',
-#             'txt_es',
-#            #'localized_pt'
-#            # 'localized_es'
-#            # 'portrait',
-#            # 'has_fork',
+class SpeechLinearCreateForm(ModelForm):
+    class Meta:
+        model = Speech
+        fields = [
+            'name',
+            'comment',
+            'my_code',
+            'txt_en',
+            'txt_pt',
+            'txt_es',
+            'conversation', #hide that field
+            'line_hash',
+            'speaker',
+            
+            
+           #'localized_pt'
+           # 'localized_es'
+           # 'portrait',
+           # 'has_fork',
 
-#         ]
+        ]
 
 class SpeechCreateForm(ModelForm):
     class Meta:

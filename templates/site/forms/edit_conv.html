@@ -32,20 +32,23 @@
             <div class = "speech_wrapper ">
                 <p>Change the class of my parent</p>
 
-                <div class = "wrapper new_speech" >
-                    
-                    
-                    <h1> Add new speech </h1>
-                    
+
+                <div class = "wrapper new_speech">
                     <button
-                    _="on click toggle .hidden on #new_speech_form"
-                    > New Speech </button>
-                    
-                    {% include 'site/forms/create_speech.html' %}
-                    
-                    
+                        class="hx-btn"
+                        hx-post="{% url 'get_speech_form' conv.id %}"
+                        hx-target="#wrap_speech_form"
+                        hx-swap="innerHTML"
+                    >
+                        New Speech
+                    </button>
+
+                    <div id="wrap_speech_form">
+
+                    </div>
+
                 </div>
-                
+
                 <div class = "wrapper all_speeches">
                     
                     <button

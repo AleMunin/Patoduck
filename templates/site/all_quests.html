@@ -12,11 +12,10 @@
             <h6 class="list-info-title">
                 Here are all {{ total_quest }} the quests in the game
             </h6>
-
-
         </header>
 
         {% for quest in quests %}
+        
         <article class="list-article">
             <header class="list-article-header">
                 <h6>{{ quest.title }}</h6>
@@ -29,9 +28,8 @@
             <p class="list-article-description">
                 {{ quest.condition }}
             </p>
-
-            
         </article>
+
         {% endfor %}
         
     </div>
