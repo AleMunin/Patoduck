@@ -61,11 +61,14 @@
                     class="wrapper">
                     <!-- <h1>Here are all the speeches: </h1> -->
                     
-                    {% for speech in speeches %}
-                    
-                    {% include 'site/htmx/single_speech.html'%}
-                    
-                    {% endfor %}
+                        <div class="speech-list">
+                        {% for speech in speeches %}
+                        
+                        {% include 'site/htmx/single_speech.html'%}
+                        
+                        {% endfor %}
+                        </div>
+
                     </section>
                 </div>
 

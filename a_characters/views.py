@@ -53,6 +53,14 @@ def home_view(request):
 
     return render(request,'site/home.html', context )
 
+
+# Menu
+
+def menu(request):
+    # ! This is not using any kind of authentication
+    
+    ...
+
 # PAGE LISTERS ====================================================================
 
 def all_char_view(request):
@@ -306,6 +314,22 @@ def create_fork_view(request,reply_pk,fork_letter,conv_pk): # Gets form
 # FORK QUESTION HANDLING INSIDE SPEECH -----------------------------------------------------
 
 def fork_question_process(request,speech_pk): # Processes the Fork Question FORM
+
+    # ! This function was being tested, don't implement the wrap before you re-test
+
+    def wrap_html(fields):
+        """
+        <!-- ------------------ FORK (letter) --------------------------  -->
+        <div class = "fork_wrapper wrapper> Non negotiable
+            <fieldset class= "field_en">
+                <h6> Fork (letter) </h6>
+                <label>(Language) </label>
+
+                {{ form.fork_queston_en_A}}
+            </fieldset>
+
+        </div>
+        """
 
     speech = get_object_or_404(Speech,id=speech_pk)
     conv = get_object_or_404(Conversation,id=speech.conversation)

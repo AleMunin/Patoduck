@@ -2,7 +2,7 @@
 // be arsed to make a commit just for that
 
 
-// To run use: python manage.py sass static/sass/ static/css/ -g
+// To run use: watch -n 2 python manage.py sass static/sass/ static/css/ -g
 
 // BE WARNED: 
 //      1. The processor will absolute freak out if it doesn't have a space in between the data and the ":"
@@ -31,13 +31,18 @@ nav,main
 // General ones
 
 .hidden // SERIOUSLY DON'T TOUCH
-    display: none
+    display: none !important
 
 .all_container //Massive container
-    display: flex
+    
+    display: grid
+    grid-template-columns: 1fr
+    justify-items: left
 
 .wrapper // rule for ANY container
     display: flex
+    width: clamp(800px, 80%, 1200px)
+    margin: 0 auto
 
 .statistics //anything that shows numbers
     padding: 1px
@@ -87,9 +92,19 @@ nav,main
 
 .conv_wrapper //mostly #wrap_conv but let's be modular
 
+    margin: 0 auto
+    display: grid
+    grid-template-columns: 1fr
+    justify-items: center
+    width: clamp(300px, 80%, 1200px)
+
     .conv_print
+        background-color: var(--background-color)
+        border-radius: 0.5rem
+        padding: 1rem
 
     .conv_edit
+        
 
 
     //#read_mode_conv
@@ -97,50 +112,77 @@ nav,main
     //#edit_mode_conv
 
 
-.form_wrapper
+.speech_wrapper
+    width: 100%
 
-    //.conv_form
+.wrapper.new_speech
+  display: grid
+  grid-template-rows: auto 1fr  // Button gets its own row
+  gap: 1rem  // Space between rows
+  
+  // Ensure button is singular and not stretching
+  button
+    justify-self: start  // Align to start of grid
+    width: auto  // Don't stretch full width
+    grid-row: 1  // First row
+  
+  #wrap_speech_form
+    grid-row: 2  // Form in second row
+    
+    #new_speech_form
+        display: grid
+        gap: 1rem
+      
+        div 
+            textarea
+                max-height: 200px  // Prevents excessive vertical expansion
+                min-height: 100px  // Ensures some initial height
+                resize: vertical   // Allows user to resize vertically only
+                overflow-y: auto   // Adds scrollbar when content exceeds max-height
 
-
-    .fork_form //the <form>
-
-        .fork_wrapper // fork, not form.
-
-            fieldset
-                h6
-                    margin-bottom: 20px
-                
-                label // Both vsCode and Sass seem to think the html tag is a class.
-                    text-align: left
-
-                //div field
-
-            .btn_show
-                margin: 10px
-
-            //Specifics:
-
-            //.show_en
-            //.show_pt
-            //.show_es
-            
-            
-            //.field_en
-            //.field_pt
-            //.field_es
-
-    .show_form //btn
-        padding: 10px
+.all_speeches
+    width: 100%
+    display: grid
+    grid-template-rows: auto 1fr
+    width: 100%
+    
+    .btn_show_wrap
+        grid-row: 1
+        justify-self: start
+        width: auto
+        
+  
+    #all_conv_wrapp
+        width: 100%
+        grid-row: 2
+        width: 100%
+    
+        .speech-list
+            display: block
+            width: 100%
+        
+            .speech
+                display: block
+                width: 100%
+                margin-bottom: 1rem
+    
 
 
 // Blocks
 
 .speech // general attributes
 
+    border-bottom: dashed 2px
+    position: relative
+
     &-title //it is a h5
         margin: 10px
 
     &-print
+        width: 100%
+        // display: grid
+        // grid-template-rows: auto 1fr
+        // gap: 1rem
 
         &-short
 
@@ -151,13 +193,36 @@ nav,main
                 text-align: left
 
         &-translations
+            display: grid
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
+            gap: 1rem
+            width: 100%
 
             .language_wrap //general
+                width: 100%
+                display: grid
+                grid-template-rows: auto 1fr
+                border-style: solid
+                padding: 5px
+                padding-left: 10px
 
-                //.btn_show
+                .btn_show
+                    justify-self: start
+                    width: auto
+                    grid-row: 1
 
                 .txt
                     padding: 10px
+                    grid-row: 2
+                    width: 100%
+                
+                .txt_en,
+                .txt_pt,
+                .txt_es
+                    grid-row: 2
+
+                &.hidden
+                    display: none
 
                 //.txt_en
 
@@ -185,11 +250,93 @@ nav,main
                     //b
 
     &-action
+        display: block
+        width: 100%
+      
+        &-edit_speech,
+        &-fork
+            display: block
+            width: 100%
+            // display: flex
+            // justify-content: center
+            // align-items: center
+            // grid-template-rows: auto 1fr
+            margin-top: 10px
+        
+            button
+                justify-self: start
+                width: auto
+                grid-row: 1
+        
+        &-fork
 
-        //&-edit_speech
-            //btn_edit
+            
+.form_wrap
+    .fork_form 
+        border-style: solid 3px
+        .fork_wrapper .wrapper // fork, not form.
+            // Nothing of this worked
+            // display: grid
+            // grid-template-columns: repeat(3, 1fr)
+             gap: 10rem !important
 
-        //&-fork
+
+            
+            // margin-top: 2rem  !important
+            // border: 3px solid currentColor  !important
+            // padding: 1rem  !important
+            // border-radius: 0.25rem  !important
+
+            .language_group
+
+                fieldset
+                    display: flex
+                    flex-direction: column
+                    gap: 0.5rem  // Space between elements in the fieldset
+                    h6
+                        margin-bottom: 20px
+                    
+                    label // Both vsCode and Sass seem to think the html tag is a class.
+                        text-align: left
+
+                
+                //Specifics:
+
+                //.show_en
+                //.show_pt
+                //.show_es
+                
+                
+                //.field_en
+                //.field_pt
+                //.field_es
+
+            .btn_show
+                margin: 10px
+
+            .show_form //btn
+                padding: 10px
+                width: 100%
+                position: relative
+                z-index: 1
+
+            // .fork_wrapper .wrapper
+            //     width: 100%
+            //     display: flex
+            //     flex-direction: column
+
+            // .btn_show
+            //     align-self: flex-start
+            //     margin-bottom: 5px
+
+            // fieldset
+            //     width: 100%
+            //     margin-bottom: 10px
+
+
+
+            .hidden
+                display: none
 
 
 .speech-individual //paralell to speech
@@ -202,18 +349,45 @@ nav,main
 
     &-title
         padding: 10px
+        color: var(--primary)
+        margin-bottom: 1rem
+        font-weight: bold
     
     &-short
 
+        display: grid
+        grid-template-columns: repeat(2, 1fr)
+        gap: 0.5rem
+        margin-bottom: 1rem
+
         &-data
             padding: 10px
+            // Boolean indicators
+            text-align: center
+            padding: 0.25rem
+            border-radius: 0.25rem
+
+        &:first-child
+          background-color: var(--green-500)
+        
+        &:last-child
+          background-color: var(--blue-500)
 
     &-long
+        margin-bottom: 1rem
+
         &-title
             padding: 10px
+            color: var(--secondary)
+            margin-bottom: 0.5rem
 
         &-data
             padding: 10px
+            color: var(--text-muted)
+            line-height: 1.5
+            max-height: 6rem  // Roughly 3-4 lines
+            overflow: hidden
+            text-overflow: ellipsis
 
     //Specifics:
     //&-condition
@@ -238,6 +412,8 @@ nav,main
 
 button
     border-radius: 2px
+    width: 100%
+    margin-bottom: 1rem
 
 .btn_show //hyperscript to toggle a .hidden
     border-radius: 2px
@@ -247,7 +423,9 @@ button
 
 .btn-edit //exclusively for edit toggles
     border-radius: 2px
-
+    max-width: 300px
+    
+    
 //.hx-btn //htmx request
 
 .btn_send //any button that sends data to the database

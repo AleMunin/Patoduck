@@ -27,35 +27,48 @@ class ConversationCreateForm(ModelForm):
         model = Conversation
         fields = '__all__'
 
-class ForkCreateForm(ModelForm): 
+class ForkCreateForm(ModelForm):
+
+    
     class Meta:
-            model = Speech
-            fields = [
-                'fork_question_en_A',
-                'fork_question_pt_A',
-                'fork_question_es_A',
-                
-                'fork_question_en_B',
-                'fork_question_pt_B',
-                'fork_question_es_B',
+        model = Speech
+        fields = [
+            'fork_question_en_A',
+            'fork_question_pt_A',
+            'fork_question_es_A',
+            
+            'fork_question_en_B',
+            'fork_question_pt_B',
+            'fork_question_es_B',
 
-                'fork_question_en_C',
-                'fork_question_pt_C',
-                'fork_question_es_C',
+            'fork_question_en_C',
+            'fork_question_pt_C',
+            'fork_question_es_C',
 
-                'fork_question_en_D',
-                'fork_question_pt_D',
-                'fork_question_es_D',
+            'fork_question_en_D',
+            'fork_question_pt_D',
+            'fork_question_es_D',
 
-                'fork_question_en_E',
-                'fork_question_pt_E',
-                'fork_question_es_E',
+            'fork_question_en_E',
+            'fork_question_pt_E',
+            'fork_question_es_E',
 
-                'fork_question_en_F',
-                'fork_question_pt_F',
-                'fork_question_es_F',
-                ]
+            'fork_question_en_F',
+            'fork_question_pt_F',
+            'fork_question_es_F',
+            ]
+        
+        wid = {}
+        for field in fields:
+            wid |= {
+                field : forms.Textarea(attrs={
+                        'rows' : 3,
+                        'cols' : 20
+                            }            
+                        )
+                }
 
+        widgets = wid
 
 # Huge Ass stravaganza because I wanted to deal with divs.
 
@@ -97,14 +110,41 @@ class SpeechLinearCreateForm(ModelForm):
             'conversation', #hide that field
             'line_hash',
             'speaker',
-            
-            
+        
            #'localized_pt'
            # 'localized_es'
            # 'portrait',
            # 'has_fork',
 
         ]
+        # * I know I could make a default here, but I'm still testing.
+        # * And because of that, I can't be bothered.
+        
+        widgets = { 
+
+            'comment': forms.Textarea(attrs={
+                'rows': 4,
+                'cols': 4
+            }),
+
+            'my_code': forms.Textarea(attrs={
+                'rows': 4,
+                'cols': 4
+            }),
+
+            'txt_en': forms.Textarea(attrs={
+                'rows': 4,
+                'cols': 4
+            }),
+            'txt_pt': forms.Textarea(attrs={
+                'rows': 4,
+                'cols': 4
+            }),
+            'txt_es': forms.Textarea(attrs={
+                'rows': 4,
+                'cols': 4
+            })
+        }
 
 class SpeechCreateForm(ModelForm):
     class Meta:

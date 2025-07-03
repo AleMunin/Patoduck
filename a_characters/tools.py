@@ -12,6 +12,22 @@ import secrets #for hash
 
 # QUALITY OF LIFE
 
+def html(content, tag="div", htmclass=""):
+    """It doesn't have many escaping, just don't be stupid"
+    Use:
+    render(request, 'template.html', {'html_content': '<p>Your HTML here</p>'}) and then display it in the template using {{ html_content|safe }}
+    """
+    if htmclass == "":
+        cl = ""
+    else:
+        cl = f" class = '{htmclass}'"
+    return """
+    <{tag}{cl}>
+        {content}
+    </{tag}>
+    """
+
+
 def get_fork_fields(obj,language_group): # management of my own madness
     speech = obj
 
