@@ -23,7 +23,16 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     
-    # Main
+    # Main Overviews
     
-    path('', home_view)
+    path('', home_view),
+    path('all/chars', all_char_view, name="all_char"),
+    path('all/locs', all_location_view, name="all_location"), 
+    path('all/quests', all_quest_view, name='all_quest'),
+    path('all/convs', all_conv_view, name='all_conv'),
+    
+    
+    # Creation Forms
+    path('create/char', character_create_view, name='create_char'),
+
 ]

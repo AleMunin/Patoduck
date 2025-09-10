@@ -1,5 +1,5 @@
-import uuid
-from django.db import models
+import uuid # general library
+from django.db import models # django libraries
 
 # Create your models here.
 class Character (models.Model):

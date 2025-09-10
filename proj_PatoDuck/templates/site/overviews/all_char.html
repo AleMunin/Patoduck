@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block layout %}
+
+<h1>{{ view_name }}</h1>
+
+<div class="wrap">
+    <h4>List of all {{ total_char }} Characters:</h4>
+    {% for char in chars %}
+        {% include 'site/read/single/single_char.html' %}    
+    {% endfor %}
+</div>
+
+{% endblock %}

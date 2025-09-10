@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{# might remove the extend part for modal #}
+
+{% block layout %}
+<div class="wrap">
+
+    <h4> Create Character </h4>
+    <form method="POST">
+        
+        {% csrf_token %}
+        
+        {{ form.non_field_errors }}
+
+        <div class="field char_name">
+            {{ form.name.errors }}
+            <label>
+                Character Name: 
+            </label>
+            {{ form.name }}
+        </div>
+
+        <div class="field char_name">
+            {{ form.name_pt.errors }}
+            <label>
+                Character Name (PT): 
+            </label>
+            {{ form.name_pt }}
+        </div>
+
+        <div class="field char_name">
+            {{ form.name_es.errors }}
+            <label>
+                Character Name (ES): 
+            </label>
+            {{ form.name_es }}
+        </div>
+
+        <div class="field minor_stuff grid">
+            <div class="field char_walkable">
+                {{ form.walkable.errors }}
+                <label>
+                    Walkable: 
+                </label>
+                {{ form.walkable }}
+            </div>
+
+            <div class="field published">
+                {{ form.published.errors }}
+                <label>
+                    Published: 
+                </label>
+                {{ form.published }}
+            </div>
+        </div>
+
+        <button type="submit"> Submit Character</button>
+        <a href="{{  request.META.HTTP_REFERER }}">Cancel</a>
+    </form>
+
+</div>
+
+{% endblock %}

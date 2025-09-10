@@ -1,0 +1,16 @@
+{# this require the information to be sent as "quest", for a single questation object #}
+
+<div class="print-quest" id="print_quest_{{ quest.id }}">
+    <header class="print-quest-header">
+        <h6> {{ quest.name }} </h6>
+        <ul>
+            <li><strong>PT:</strong> {{ quest.name_pt }} </li>
+            <li><strong>ES:</strong> {{ quest.name_es }} </li>
+        </ul>
+    </header>
+
+    {# Add if it is indoors or not #}
+    <p> {{ quest.description }} </p>
+
+    <div>Insert Modal Button Here</div>
+</div>

@@ -1,2 +1,17 @@
-{% include 'includes/header.html' %}
-<h1>Charizard is eating nachos</h1> 
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'includes/header.html' %}
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% include 'includes/menu.html' %}
+
+    <h1>This is the ducking hub</h1>
+
+    {% block layout %}
+
+    {% endblock %}
+    
+</body>
+</html>

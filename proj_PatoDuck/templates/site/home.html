@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+
+{% block layout %}
+<h1> This is the content for {{ view_name }} </h1>
+
+<article class="statistics">
+    <h1> Story Stats </h1>
+
+    <p> You have <b> {{ all_chars }} </b> Characters  </p>
+    <p> You have <b> {{ all_locs }} </b> Locations  </p>
+    <p> You have <b> {{ all_quests }} </b> Quests </p>
+    <p> You have <b> {{ all_convs }} </b> Conversations </p>
+    <p> You have <b> {{ all_speeches }} </b> Individual Speeches </p>
+</article>
+
+{% endblock %}

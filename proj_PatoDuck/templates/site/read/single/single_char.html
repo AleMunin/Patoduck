@@ -1,0 +1,19 @@
+{# this require the information to be sent as "char", for a single Character object #}
+
+<div class="print-char" id="print_char_{{ char.id }}">
+    <header class="print-char-header">
+        <h6> {{ char.name }} </h6>
+        <ul>
+            <li><strong>PT:</strong> {{ char.name_pt }} </li>
+            <li><strong>ES:</strong> {{ char.name_es }} </li>
+        </ul>
+    </header>
+
+    {% if char.walkable == true %}
+        <div class="list-article-checkbox">
+            <p> Is walkable </p>
+        </div>
+    {% endif %}
+
+    <div>Insert Modal Button Here</div>
+</div>
