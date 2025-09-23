@@ -5,6 +5,10 @@
     {% include 'includes/header.html' %}
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <div id="dialogue_nest">
+        <!-- This is the target to all modals using dialogue, that don't need to be stored -->
+    </div>
+
     {% include 'includes/menu.html' %}
 
     <h1>This is the ducking hub</h1>

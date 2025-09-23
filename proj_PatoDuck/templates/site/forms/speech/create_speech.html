@@ -1,0 +1,74 @@
+{# This will be inserted on the main dialogue tag of the site as a modal due to picoCSS #}
+
+<div class="should-be-modal">
+    <form method="POST"
+        class="grid"
+    >
+    
+        {% csrf_token %}
+
+    <div class="form-speech-textbox">
+        <div class="form-speech-textbox-en">
+            {{ form.txt_en.label_tag }}
+            {{ form.txt_en }}
+            {{ form.txt_en.errors }}
+        </div>
+
+        <div class="form-speech-textbox-pt">
+            {{ form.txt_pt.label_tag }}
+            {{ form.txt_pt }}
+            {{ form.txt_pt.errors }}
+
+            {{ form.localized_pt.label_tag }}
+            {{ form.localized_pt }}
+            {{ form.localized_pt.errors }}
+        </div>
+
+        <div class="form-speech-textbox-es">
+            {{ form.txt_es.label_tag }}
+            {{ form.txt_es }}
+            {{ form.txt_es.errors }}
+
+            {{ form.localized_es.label_tag }}
+            {{ form.localized_es }}
+            {{ form.localized_es.errors }}
+        </div>
+        
+    </div> <!-- main textbox stuff-->
+    
+    <div>
+        <div class= "btn_show" _="on click toggle .hidden on next .optional">
+            Code and Comments
+        </div>f
+
+        <div class="optional hidden">
+            {{ form.comment.label_tag }}
+            {{ form.comment }}
+            {{ form.comment.errors }}
+            
+            {{ form.my_code.label_tag }}
+            {{ form.my_code }}
+            {{ form.comment.errors }}
+        </div>  
+    </div>
+
+
+    <div class=" hidden form-metadata">
+        {{ form.conversation }}
+        {{ form.previous_speech }}
+        {{ form.is_fork }}
+    </div>
+    <!-- ------------------------------------------------------------------------- -->
+        <footer>
+        <h1> TEST COMPLETE</h1>
+            <button type="submit"> Submit Speech</button>
+            <a href="{{  request.META.HTTP_REFERER }}">Cancel</a>
+        </footer>
+    </form>
+</div>
+
+
+<div>
+
+    
+</div>

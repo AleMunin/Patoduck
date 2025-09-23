@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+
+{% block layout %}
+
+<form method="POST">
+    
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit"> Submit Location</button>
+    <a href="{{  request.META.HTTP_REFERER }}">Cancel</a>
+</form>
+
+{% endblock %}

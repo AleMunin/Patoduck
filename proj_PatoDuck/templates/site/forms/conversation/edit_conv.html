@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block layout %}
+<div id="wrap_conv" class="conv_wrapper wrapper">
+
+    <button
+    class= "btn-edit"
+    _="on click 
+        toggle .hidden on #edit_mode_conv
+        toggle .hidden on #read_mode_conv"
+    >
+        Edit Conversation
+    </button>
+
+    <div id="read_mode_conv" class=conv_print>
+
+        {% include 'site/read/single/single_conv.html' %}
+        {# this will likely need a single more complex #}
+    </div>
+
+    <form id="edit_mode_conv" class="hidden conv_edit" method = "post">
+        {% csrf_token %}
+        {{ conv_form }}
+        <button type="submit">Save Changes </button>
+    </form>
+
+    <a href="{% url 'all_conv' %}"> Return to all Conversations </a>
+
+</div>
+
+<div>
+    <h4>Create Speech
+
+        {# HTMX button that calls #}
+    </h4>
+</div>
+
+
+<div>
+    <h1>Speech tests</h1>
+
+    {% if speeches %}
+
+        {% for speech in speeches %}
+            <div>
+                {{speech | dictsort:"name"}}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+    {% include 'site/forms/speech/htmx_get_new_speech.html' %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{# This shows all speeches in a conversation, not all speeches in the database #}
+
+<div>
+    {# this is a sketch #}
+    {% for speech in speeches %}
+        <div>
+            {{ speech.name }}
+
+            <p> Insert the speech data in here</p>
+
+            {% if category.subcategories.all %}
+
+                <div>
+                    {% render_categories category.subcategories.all %}
+                </div>
+
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

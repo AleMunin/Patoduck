@@ -1,49 +1,10 @@
-{% load static %}
+/*
+ * Modal
+ *
+ * Pico.css - https://picocss.com
+ * Copyright 2019-2024 - Licensed under MIT
+ */
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-<title>PatoDuck</title>
-
-<!-- Functionality -->
-
-<script src="https://unpkg.com/htmx.org@2.0.3"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://unpkg.com/hyperscript.org@0.9.13"></script>
-
-<script>
-$(document).ready(function(){
-    /*Believe when i tell you, not knowing Jquery
-    and doing this was easier than finding out how to add
-    classes to container divs in django. */
-  $(".hide_annoying_parent").parent().css({"display":"none"});
-
-});
-</script>
-
-
-<!-- Graphics -->
-
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
->
-
-<link
-rel="stylesheet"
-href="{% static 'css/style.css' %}"
->
-
-
-<style>
-  .hidden{
-    display: none;
-  }
-</style>
-
-<!-- Testing pico Modal, change to the js folder when you're done-->
-<script>
 // Config
 const isOpenClass = "modal-is-open";
 const openingClass = "modal-is-opening";
@@ -112,6 +73,3 @@ const getScrollbarWidth = () => {
 const isScrollbarVisible = () => {
   return document.body.scrollHeight > screen.height;
 };
-
-
-</script>

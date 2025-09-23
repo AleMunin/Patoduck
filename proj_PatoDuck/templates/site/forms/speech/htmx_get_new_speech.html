@@ -1,0 +1,11 @@
+{# This button calls through HTMX #}
+
+
+<button
+    class="hx-btn btn-dialogue"
+    hx-post="{% url 'get_speech_form' conv.id %}"
+    hx-target="#dialogue_nest"
+    hx-swap="innerHTML"
+>
+    New Speech
+</button>

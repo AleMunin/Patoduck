@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 
 from app_babel.views import *
+from app_babel.views_htmx import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,5 +35,17 @@ urlpatterns = [
     
     # Creation Forms
     path('create/char', character_create_view, name='create_char'),
+    path('create/quest', quest_create_view, name='create_quest'),
+    path('create/loc', location_create_view, name="create_location"),
+    path('create/conv', conversation_create_view, name='create_conv'),
+    
+    
+    # Edit Forms
+    
+    path('edit/conv/<pk>', edit_conv_view, name='edit_conv' ), #? Remember that this will create speeches too
+
+    # HTMX requests
+    
+    path('forms/new_speech/<conv_pk>', htmx_get_new_speech_form, name = 'get_speech_form')
 
 ]

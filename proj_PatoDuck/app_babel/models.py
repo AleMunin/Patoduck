@@ -81,16 +81,16 @@ class Quest(models.Model):
     id = models.CharField(max_length=25, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
     title = models.CharField(max_length=250, unique=True)
-    title_pt = models.CharField(max_length=250, unique=True, null=True)
-    title_es = models.CharField(max_length=250, unique=True, null=True)
+    title_pt = models.CharField(max_length=250, unique=True, null=True, blank=True)
+    title_es = models.CharField(max_length=250, unique=True, null=True, blank=True)
 
     description = models.TextField()
-    description_pt = models.TextField(null=True)
-    description_es = models.TextField(null=True)
+    description_pt = models.TextField(null=True,blank=True)
+    description_es = models.TextField(null=True,blank=True)
     
     # ? Data for users
 
-    condition = models.TextField() # This is just a comment for the user
+    condition = models.TextField(blank=True) # This is just a comment for the user
     
     number_of_steps = models.PositiveIntegerField(default=0) #number of conversations it has.
 
