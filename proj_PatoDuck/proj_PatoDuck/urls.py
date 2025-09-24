@@ -40,6 +40,7 @@ urlpatterns = [
     path('create/conv', conversation_create_view, name='create_conv'),
     
     
+    path('create/speech/<conv_pk>', speech_create_view, name='create_speech'),
     # Edit Forms
     
     path('edit/conv/<pk>', edit_conv_view, name='edit_conv' ), #? Remember that this will create speeches too

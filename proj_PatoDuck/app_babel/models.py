@@ -154,126 +154,30 @@ class Conversation(models.Model):
 
 class Speech(models.Model):
 
-    # UPDATE this model:
-    # is_rogue for lone speeches when errors and deletions happen.
-    # is_fork should be useful.
-    # Add a "Localized" checkbox, in case the translation isn't 1 to 1, so we can keep an eye on it.
-
-    # ! Already was sketching a Materialized Path Tree, without knowing what it is, so might as well follow the example of this: https://www.youtube.com/watch?v=CRxjoklS8v0
-    # * If that fails use MP_node
-
-    
     # ! Database Info
     
-    id = models.CharField(max_length=6, default=uuid.uuid4, unique=True, primary_key=True, editable=False) # ! The id is the smallest lineIDs on Yarn Spinner don't mention if a limit exists, probably don't
+    id = models.CharField(max_length=6, default=uuid.uuid4, unique=True, primary_key=True, editable=False,) # ! The id is the smallest lineIDs on Yarn Spinner don't mention if a limit exists, probably don't
 
-
-    is_first = models.BooleanField(default=False)   # easier to track
-    has_fork = models.BooleanField(default=False)   # Signaler of all the other things bellow
-    is_fork = models.BooleanField(default=False) # ! Note: If it is reply to a Fork, it is false.
-    fork_letter = models.TextField(max_length=26,blank=True) #TODO: Automate this
-    next_is_cycled = models.BooleanField(default=False)
-        # quick status that avoids infinite loops
-        # If the next_speech property is not a direct fork, but another speech for cycled dialogue
     
-    
-    # ? User info
-    name = models.CharField(max_length=250, unique=True) # TODO: Automate the generation of this, with AA, ABA, so on.
-    comment = models.TextField(blank=True, null=True)    # Context, if needed.
-    my_code = models.TextField(blank=True, null=True) # code, tags, so on
-
-
-    # Every speech is part of a conversation
-    conversation = models.ForeignKey(
-        Conversation,
-        on_delete=models.PROTECT
-    )
-
-    # Add your languages here, ironically the simplest part
-
     txt_en = models.TextField()
     txt_pt = models.TextField(blank=True, null = True)
     txt_es = models.TextField(blank=True, null = True)
     
-    my_fork_question_en = models.TextField(blank=True, null = True) # TODO: Enforce validation of this if it is a fork.abs
-    my_fork_question_pt = models.TextField(blank=True, null = True) # TODO: Enforce requirement of this if it is being translated
-    my_fork_question_es = models.TextField(blank=True, null = True) # TODO: Enforce requirement of this if it is being translated
-
-
-    # ! Flags 
+        # Every speech is part of a conversation
+    conversation = models.ForeignKey(
+        Conversation,
+        on_delete=models.PROTECT,
+        related_name="speeches"
+    )
     
-    localized_pt = models.BooleanField(default=False)   # If it is not a literal translation. For whatever reason.
-    localized_es = models.BooleanField(default=False)
-
-    #proofread_en = models.BooleanField(default=False)
-    #proofread_pt = models.BooleanField(default=False)
-    #proofread_es = models.BooleanField(default=False)
-
-    speaker = models.ForeignKey(    # NPC that says it
-        Character,
-        blank = True,
-        null=True,
-        on_delete = models.PROTECT
-    )
-
-    CHOICES_EMOTION = { # I really don't see the point in doing key-relationship thing in here, but everyone is doing and
-                        # like the masses I can't be bothered by critical thinking, especially if it will lead me to a bug
-
-        'DF' : "Default",
-        'CT' : "Custom",
-        
-        'HP' : "Happy",
-        'SD' : "Sad",
-
-        "EX" : "Excited",
-        "TD" : "Tired",
-
-        "TD" : "Thoughtful / Thinking",
-        "DT" : "Distracted",
-
-        'TN' : "Tense",
-        'PN' : "In Pain",
-
-        'CF' : "Confused",
-        'DZ' : "Dizzy",
-
-        'CR' : "Crying",
-        'TR' : "Teary",
-        'IP' : "Inpired /Amazed",
-
-        'SP' : "Surprised",
-        "WR" : "Worried",
-    }
-
-    portrait = models.CharField(
-        max_length = 25, #because who knows, i hate the initials
-        choices = CHOICES_EMOTION,
-        default="DF"
-    )
-
-    # TODO: Remove action altogether and make it a field in here. There is no purpose    
-    # act  = models.ForeignKey(Action,blank=True,null=True,related_name='action',on_delete= models.PROTECT)
-    # action_moment = models.BooleanField(default=False) # ? False = Before, True = After the text is played.
-
-    # -------------------------------------------
-
     previous_speech = models.ForeignKey(    # Make the register make sure this is empty if it is marked as first.clea
         'self',
         blank = True,
         null=True,
-        related_name="speech_prev",
+        related_name="replies",
         on_delete = models.PROTECT
     )
 
-    next_speech = models.ForeignKey( # ! Only if has_fork is false
-        'self',
-        blank = True,
-        null=True,
-        related_name="speech_next",
-        on_delete = models.PROTECT
-    )
-
-    # ============================
 
     def __str__(self):
         return str(self.name)

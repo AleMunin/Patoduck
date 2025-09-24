@@ -156,7 +156,7 @@ def conversation_create_view(request):
             # TODO: do not add quest step on form, make it add to the end.abs
             # TODO: Make an in-between form on the edit_conv
             # TODO: make is linear and broken chain not show up on the form
-            return redirect(reverse ("edit_conv", new_form.id )) # change to edit_conv.
+            return redirect("all_conv") # change to edit_conv.
             #redirect to a speech edit with the get method for x talk
     else:
         form = ConversationCreateForm()
@@ -171,7 +171,7 @@ def linear_create_view(request,conv_pk):
 def fork_create_view(request,conv_pk,prev_pk):
     ...
 
-def speech_create_view(request,conv_pk,reply_to=None,fork_form=False):
+def old_speech_create_view(request,conv_pk,reply_to=None,fork_form=False):
     
     conv = get_object_or_404(Conversation,id=conv_pk) # prevents speech to be orphan
     
@@ -205,7 +205,7 @@ def speech_create_view(request,conv_pk,reply_to=None,fork_form=False):
 def edit_conv_view(request,pk):    
     """
     Called either by edit button or directly from creation of a conv.
-!   It will create forms to be rendered for speeches, but it WILL NOT receive them. That is for htmx modal views
+    !   It will create forms to be rendered for speeches, but it WILL NOT receive them. That is for htmx modal views
     
     """
     conv = Conversation.objects.get(id=pk)
@@ -223,10 +223,12 @@ def edit_conv_view(request,pk):
     else:
         conv_form = ConversationEditForm(instance=conv)
         
-    if speeches := tree_of_speeches(conv.id):
-        print(speeches.values())
-    else:
-        speeches = []
+    # # if speeches := tree_of_speeches(conv.id):
+    # #     print(speeches.values())
+    # else:
+    #     speeches = []
+    
+    speeches = Speech.objects.all()
     
     context = {
         'pk' : pk,  #no need to be this way but i'm fed up
@@ -237,3 +239,64 @@ def edit_conv_view(request,pk):
 
     }
     return render(request,'site/forms/conversation/edit_conv.html', context)
+
+
+def speech_create_view(request,conv_pk):
+    conv = get_object_or_404(Conversation,id=conv_pk)
+    
+    if request.method == 'POST':
+        form = SpeechCreateForm(request.POST)
+
+        if form.is_valid():
+            
+            print (" FORM WAS VALID, TIME DIDN'T BITCH SO FAR")
+            
+            
+            form.conversation = conv
+            
+            print(" Right before saving, let's see" )
+            form.save()
+            
+            return HttpResponse("<h1> Saved! </h1>")
+            # if not has_first_speech(conv_pk):
+            #     form.is_first = True
+            #     form.save()
+                
+            #     print("speech_create_view: First Speech Saved")
+            #     return HttpResponse("Nachoooos")
+                
+            # else:
+            #     # TODO: is_first_speech is not throwing errors right now. So careful with that
+            #     if conv.is_linear:
+                    
+            #         try:
+                        
+            #            last_speech = Speech.objects.filter(conversation=conv_pk, next_speech = None)
+            #            form.previous_speech = last_speech
+            #            last_speech.next_speech = form.save()
+            #            last_speech.save()
+                       
+                       
+                       
+            #         except Speech.DoesNotExist:
+            #             conv.broken_flag = True
+            #             conv.save()
+                        
+            #             print( " speech_create_view ERROR: Linear Conversation has no empty next speeches. Did you edit a ciruclar talk by accident?")
+
+            #         except Speech.MultipleObjectsReturned:
+            #             conv.broken_flag = True
+            #             conv.save()
+            #             # TODO: Make a log of them somewhere
+            #             print (" speech_create_view ERROR: Two or more next_speech fields empty on a linear query. Possible fork unmarked")
+            #     else:
+            #         ...
+            #         # TODO: Deal with forks here? Idk.
+                        
+            # ? Add is response to
+        else:
+            
+            print( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Form invalid?")
+            
+            for field, errors in form.errors.items():
+                print(f"{field}: {errors}")

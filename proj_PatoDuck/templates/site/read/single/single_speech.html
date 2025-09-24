@@ -1,0 +1,65 @@
+<div 
+    id = "print_{{ speech.id }}"
+    class = "speech
+        "
+    >
+
+    <h5 class="speech-title">
+        {{ speech.name }}
+    </h5>
+    
+    <div class = "speech-print">
+        
+        <div class="speech-print-translations">
+        
+            <div class="language_wrap wrapper en_print">
+                <button
+                class="btn_show"
+                _= "on click toggle .hidden on the next <div/>">
+                    Show EN
+                </button>
+                <div class="txt txt_en">
+                    <p> {{ speech.txt_en }} </p>
+                </div>
+            </div>
+
+            <div class="language_wrap wrapper pt_print">
+                <button
+                class="btn_show"
+                _= "on click toggle .hidden on the next <div/>">
+                    Show PT
+                </button>
+                <div class="txt_pt">
+                    <p> {{ speech.txt_pt }} </p>
+                </div>
+            </div>
+
+            <div class="language_wrap wrapper es_print">
+                <button
+                class="btn_show"
+                _= "on click toggle .hidden on the next <div/>">
+                    Show ES
+                </button>
+                <div class="txt_es">
+                    <p> {{ speech.txt_es }} </p>
+                </div>
+            </div>
+            
+        </div>        <!-- end of translations -->
+
+
+
+        <div class= "forks">
+
+            {% for fork in speech.forks.all %}
+                {% include 'site/read/single/single_speech.html' with speech=fork %}
+            {% endfor %}
+    
+        </div>
+
+    </div>        <!-- end of speech print -->
+
+            
+    {% include 'site/read/single/single_speech.html'%}
+    
+</div>

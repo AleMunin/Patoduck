@@ -1,4 +1,7 @@
 from .models import *
+from django.shortcuts import render, redirect, get_object_or_404
+
+
 
 def conv_create_name(conv):
     ... # basically if conv has a quest, so on.
@@ -13,6 +16,22 @@ def speech_create_name(conv,reply_to=None): # create names for speeches
         num += 1
         name = f"F-{reply_to.name} [{num}]"
     return name
+
+def has_first_speech(conv_pk):
+    if not (first_speech := Speech.objects.filter(conversation=conv_pk, is_first=True)):
+        if not Speech.objects.filter(conversation=conv_pk):
+            return False #? It does not have a first speech at all
+        else:
+            conv = get_object_or_404(Conversation,id=conv_pk)
+            conv.broken_chain = True
+            conv.save()
+            
+            # TODO: Raise exception here to return error
+            print ("   has_first_speech: Conversation has been flagged as broken ")
+    else:
+        return True #? It does have a first speech
+            
+
 
 def tree_of_speeches(conv_pk,orphans=False):
     """

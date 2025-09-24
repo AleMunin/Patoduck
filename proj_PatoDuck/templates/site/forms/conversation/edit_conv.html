@@ -36,18 +36,14 @@
 </div>
 
 
-<div>
+<div id = "all_conv_wrapp">
     <h1>Speech tests</h1>
 
-    {% if speeches %}
-
-        {% for speech in speeches %}
-            <div>
-                {{speech | dictsort:"name"}}
-            </div>
-        {% endfor %}
-    {% endif %}
-
+    {% for speech in speeches %}
+                        
+        {% include 'site/read/single/single_speech.html'%}
+                        
+    {% endfor %}
 
     {% include 'site/forms/speech/htmx_get_new_speech.html' %}
 </div>

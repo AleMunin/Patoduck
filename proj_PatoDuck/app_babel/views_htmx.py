@@ -14,7 +14,9 @@ def htmx_get_new_speech_form(request,conv_pk):
     conv = get_object_or_404(Conversation,id=conv_pk)
     
     initial_values = {
-            'conversation' : conv_pk,
+            'conversation' : conv,
+            #? previous_speech can be set here, if you want
+            
             #'line_hash' : create_hash(), # ! Just do a better job here with a randomizer when the form is valid.
             #TODO: 'name' : create_name(conv),
             'txt_en' : "LOLOLOL"
@@ -23,7 +25,8 @@ def htmx_get_new_speech_form(request,conv_pk):
     form = SpeechCreateForm(initial=initial_values)
     
     context = {
-        "form" : form
+        "form" : form,
+        "conv_pk" : conv_pk
     }
     return render(request,'site/forms/speech/create_speech.html', context)
     

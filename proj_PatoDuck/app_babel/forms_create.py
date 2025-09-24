@@ -82,38 +82,14 @@ class ConversationCreateForm(ModelForm):
 class SpeechCreateForm(ModelForm):
     class Meta:
         model = Speech
-        fields = [ #! DO NOT ADD FORK QUESTIONS HERE FOR NOW
-            # Wrapp on div "form-speech-status"
-            'has_fork',
-            'speaker',
-            'portrait',
-            
-            # Wrap on div "form-speech-textbox"
-            # rows 5, col 4
-            'txt_en',
-            'txt_pt',
-            'txt_es',
-            
-            # ? Optional, easier to hide
-            # wrap on div "form-fork-question"
-            # rows 2, col 4
-            # wrap on div "form-localized"
-            'localized_pt',
-            'localized_es',
-            
-            # wrap on div "optional"
-            'comment',
-            'my_code',
-            
-             # ? This will be filled by the view
-             
-             #wrap on div "hide form-metadata"
-             # TODO: Make this read only on widgets
-            'conversation',
-            'previous_speech',
-            'is_fork', #? maybe, idk yet
-        ]
-        widgets = { #? do not put disableds/readonlys here, make it more explicit so you don't end up miserable next refactor
+        fields = '__all__'
+        
+        # exclude = ('conversation', 
+        #            #'is_first', 
+        #            #'fork_letter',
+        #            )
+        
+        widgets = {
             'txt_en' : forms.Textarea(attrs={
                 'class': 'form-field',
                 'cols': 2,
@@ -134,10 +110,4 @@ class SpeechCreateForm(ModelForm):
             }),
             
         }
-        
-        #! Disables
-        
-        
-        
-        
-        
+                
