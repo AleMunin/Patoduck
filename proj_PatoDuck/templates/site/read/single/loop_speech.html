@@ -1,0 +1,25 @@
+{# This goes for forks and replies #}
+{# TODO: Move this up one folder #}
+
+<div>
+
+  {% for speech in speeches %}
+    {% if speech.name %} {# I am dumb, my nesting list is giving empty items #}
+      
+
+        <h1> {{ speech.name }} </h1>
+
+
+        {{ speech|pprint }}
+
+        {% include "site/read/single/single_speech.html" with speech=speech %}
+
+        <p>----- end of {{ speech.name}} </p>
+
+    {% endif %}
+    {% if speech|length > 0 %}
+      {% include "site/read/single/loop_speech.html" with speeches=speech %}
+    {% endif %}
+
+  {% endfor %}
+</div>

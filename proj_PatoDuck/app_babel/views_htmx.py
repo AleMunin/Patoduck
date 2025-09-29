@@ -29,4 +29,9 @@ def htmx_get_new_speech_form(request,conv_pk):
         "conv_pk" : conv_pk
     }
     return render(request,'site/forms/speech/create_speech.html', context)
+
+
+def htmx_get_edit_speech_form(request,speech_pk):
+    speech = get_object_or_404(Speech, id=speech_pk)
+    return render(request,'site/forms/speech/create_speech.html', context)
     

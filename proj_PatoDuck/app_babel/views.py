@@ -1,3 +1,4 @@
+import pprint
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
@@ -202,13 +203,46 @@ def old_speech_create_view(request,conv_pk,reply_to=None,fork_form=False):
             
 # ? Edit Profiles
 
+
+def add_html_forks(speech):
+    # just say fuck it and print safe through here
+    all_forks = [speech]
+        
+    forks = Speech.objects.filter(previous_speech=speech.id)
+
+    for fork in forks:
+        all_forks.append( add_forks(fork) )  
+        
+
+    return all_forks
+
 def edit_conv_view(request,pk):    
     """
     Called either by edit button or directly from creation of a conv.
     !   It will create forms to be rendered for speeches, but it WILL NOT receive them. That is for htmx modal views
     
     """
+    
+    def add_forks(speech):
+        
+        #all_forks =[]
+        #all_forks.append(speech)
+        
+        all_forks = [speech]
+        
+        forks = Speech.objects.filter(previous_speech=speech.id)
+
+        for fork in forks:
+            all_forks.append( add_forks(fork) )  
+            
+        print(f"my print is {speech.name}")
+        print("the results are:")
+        pprint.pprint(all_forks)
+        return all_forks
+    
     conv = Conversation.objects.get(id=pk)
+
+    # POST HANDLING --------------------------------
 
     if request.method == 'POST':
         new_conv = ConversationEditForm(request.POST, instance=conv)
@@ -219,25 +253,41 @@ def edit_conv_view(request,pk):
             #? this was queried again because using the new_conv, though saved, would cause errors.
         else:
             conv_form = new_conv
-            # ! I couldn't test that
-    else:
+            # ! I couldn't test that ✖‿✖
+            
+    else: #? If not post
         conv_form = ConversationEditForm(instance=conv)
         
-    # # if speeches := tree_of_speeches(conv.id):
-    # #     print(speeches.values())
-    # else:
-    #     speeches = []
+    # Speech list handling -------------------------
+        #? This could probably replace the tree_of_speeches code
     
-    speeches = Speech.objects.all()
-    
+    #all_speeches = []
+
+    if (first_speech := has_first_speech (pk,True)):
+        # TODO: Probably should use prefetch here, but screw it
+        
+        #all_speeches.append(first_speech.first())
+        #all_speeches.append(add_forks(first_speech.first()))
+        all_speeches = add_forks(first_speech.first())
+    else:
+        all_speeches = []
+    # Context ------------------------------------------
     context = {
         'pk' : pk,  #no need to be this way but i'm fed up
         'conv_form' : conv_form,
         'conv' : conv, # ? it will print the original conv there
         # TODO: 'speech_form' : speech_form, actually this can be asked on htmx
-        'speeches' : speeches
+        'speeches' : all_speeches
 
     }
+    
+    print("")
+    print("")
+    print("")
+    print("")
+    print("")
+    pprint.pprint(all_speeches)
+    
     return render(request,'site/forms/conversation/edit_conv.html', context)
 
 

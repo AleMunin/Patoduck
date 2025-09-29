@@ -1,65 +1,48 @@
-<div 
-    id = "print_{{ speech.id }}"
-    class = "speech
-        "
-    >
+<div class = "speech wrap">
+    <div class = "speech-print" id=" speech_{{ speech.id }}">
+        Display
 
-    <h5 class="speech-title">
-        {{ speech.name }}
-    </h5>
-    
-    <div class = "speech-print">
-        
-        <div class="speech-print-translations">
-        
-            <div class="language_wrap wrapper en_print">
-                <button
-                class="btn_show"
-                _= "on click toggle .hidden on the next <div/>">
-                    Show EN
-                </button>
-                <div class="txt txt_en">
-                    <p> {{ speech.txt_en }} </p>
-                </div>
+        <h2 class = "speech-print-title">Name: {{ speech.name }} </h2>
+
+        <div class = "speech-print-translations">
+            <div class = "language_wrap wrap">
+                
+                {# Here is the core part of speeches #}
+                
+                {# Add Fork Question here too #}
+                <p class="txt txt-en"> <strong>EN:</strong>  {{ speech.txt_en }}  </p>
+                <p class="txt txt-pt"> <strong>PT:</strong>  {{ speech.txt_pt }}  </p>
+                <p class="txt txt-es"> <strong>ES:</strong>  {{ speech.txt_es }}  </p>
+
             </div>
-
-            <div class="language_wrap wrapper pt_print">
-                <button
-                class="btn_show"
-                _= "on click toggle .hidden on the next <div/>">
-                    Show PT
-                </button>
-                <div class="txt_pt">
-                    <p> {{ speech.txt_pt }} </p>
-                </div>
-            </div>
-
-            <div class="language_wrap wrapper es_print">
-                <button
-                class="btn_show"
-                _= "on click toggle .hidden on the next <div/>">
-                    Show ES
-                </button>
-                <div class="txt_es">
-                    <p> {{ speech.txt_es }} </p>
-                </div>
-            </div>
-            
-        </div>        <!-- end of translations -->
-
-
-
-        <div class= "forks">
-
-            {% for fork in speech.forks.all %}
-                {% include 'site/read/single/single_speech.html' with speech=fork %}
-            {% endfor %}
-    
         </div>
 
-    </div>        <!-- end of speech print -->
+        <div class = "speech_data">
+            <p><strong>Previous Speech:</strong></p>
+            <p><strong>Next is Cycled:</strong></p>
+        </div>
 
-            
-    {% include 'site/read/single/single_speech.html'%}
+    </div>
     
+    <div class = "speech-action hidden" id= " form_{{ speech.id }} ">
+        Edit Form
+    </div>
+
+    <p>My id is: {{speech.id }}</p>
+
+    {% if speech.id %}
+    <button
+        class="btn btn-show btn-htmx"
+        hx-swap = "innerHTML"
+        hx-post="{% url 'get_speech_edit_form' speech.id %}"
+        
+        hx-target= "#form_{{ speech.id }}"
+        _=""
+    > Edit
+    {# Add hyperscript to toggle classes #}
+    </button>
+    {% else %}
+    <h1> This is an empty ID</h1>
+    {% endif %}
+
 </div>

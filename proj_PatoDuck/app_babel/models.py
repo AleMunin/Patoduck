@@ -76,7 +76,14 @@ class Location (models.Model):
 
     def __str__(self):
         return str(self.name)
+
+class Stage (models.Model):
+    ...
+    # name
+    # just helps categorize things on quest and conversation
+    # so it is easier to sort conditional speeches
     
+
 class Quest(models.Model):
     id = models.CharField(max_length=25, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
@@ -164,6 +171,9 @@ class Speech(models.Model):
     txt_es = models.TextField(blank=True, null = True)
     
         # Every speech is part of a conversation
+        
+    name = models.CharField(max_length=250, unique=False, null=True) # TODO: Automate the generation of this, with AA, ABA, so on.
+    
     conversation = models.ForeignKey(
         Conversation,
         on_delete=models.PROTECT,
@@ -177,6 +187,10 @@ class Speech(models.Model):
         related_name="replies",
         on_delete = models.PROTECT
     )
+
+    #? Status and flags -------------------------
+    
+    is_first = models.BooleanField(default=False)   # easier to track
 
 
     def __str__(self):

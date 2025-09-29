@@ -1,7 +1,20 @@
 from .models import *
 from django.shortcuts import render, redirect, get_object_or_404
+import pprint
 
 
+def msg(txt,title="ERROR"):
+    """Creates space so it doesn't get messed up among the 32 django error lines
+    """
+    pprint.pprint(f"""
+           --------------------------------
+                        [[ERROR]]
+           
+           
+                {txt}
+           
+           --------------------------------
+           """)
 
 def conv_create_name(conv):
     ... # basically if conv has a quest, so on.
@@ -17,65 +30,50 @@ def speech_create_name(conv,reply_to=None): # create names for speeches
         name = f"F-{reply_to.name} [{num}]"
     return name
 
-def has_first_speech(conv_pk):
-    if not (first_speech := Speech.objects.filter(conversation=conv_pk, is_first=True)):
-        if not Speech.objects.filter(conversation=conv_pk):
-            return False #? It does not have a first speech at all
-        else:
-            conv = get_object_or_404(Conversation,id=conv_pk)
-            conv.broken_chain = True
-            conv.save()
+# --------------------------------------------------------------------
+
+def has_first_speech(conv_pk,return_speech=False):
+    
+    try:
+        if (first_speech := Speech.objects.filter(conversation=conv_pk, is_first=True)):
+            if return_speech:
+                return first_speech
+            else:
+                return True
             
-            # TODO: Raise exception here to return error
-            print ("   has_first_speech: Conversation has been flagged as broken ")
-    else:
-        return True #? It does have a first speech
-            
+    except Speech.MultipleObjectsReturned:
+        
+        
+        msg("has_first_speech: Multiple Firsts, marking the conversation as broken")
+        
+        pprint(first_speech)
+        
+        conv = get_object_or_404(Conversation,id=conv_pk)
+        conv.broken_chain = True
+        conv.save()
+        
+        return None #? because there is no true first, it is better to throw a wrench
+        
+    except Speech.DoesNotExist: #no results with first speech
+        return False
 
 
+                       
+    
+    
+    
+    
+    
+    
+    
+    
+                
+
+# ! maybe remove this
 def tree_of_speeches(conv_pk,orphans=False):
     """
     Iterates a query and packages the hierarchy trees
     Then it will query orphans, if set to do it
     """
-    all_speeches = []
-    current_speech = []
-    
-    first_speech = Speech.objects.filter(conversation=conv_pk, is_first=True)
-       # TODO: if result is more than one, flag as broken broken_chain, exit
-    
-    if not first_speech: # ? if queryset is empty
-        if test_speeches := Speech.objects.filter(conversation=conv_pk): #? if there are speeches
-            flag_conv = Conversation.objects.get(id=conv_pk)
-            flag_conv.broken_chain=True 
-            #TODO: LOG this properly
-        else:
-            #TODO: LOG this properly
-            msg = """
-            
-            The conversation asked to edit is just empty, don't worry.
-            
-            """
-            print(msg)
-            
-    else:
-            
-        all_speeches.append(first_speech)
-        
-        current_speech += first_speech #? will add as a single element of the list
-        speeches = Speech.objects.filter(previous_speech=first_speech.id)
-        
-        for speech in speeches:
-            
-            forks = Speech.objects.filter(previous_speech=speech.id)
-            for fork in forks:
-                all_speeches.append(forks)
-            all_speeches.append(speeches)
-        
-        return all_speeches
-    
-    
-    # query orphans
-    # exclude is_first
-    return None
+    ...
     

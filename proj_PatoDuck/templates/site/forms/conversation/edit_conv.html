@@ -18,6 +18,7 @@
         {# this will likely need a single more complex #}
     </div>
 
+
     <form id="edit_mode_conv" class="hidden conv_edit" method = "post">
         {% csrf_token %}
         {{ conv_form }}
@@ -39,13 +40,10 @@
 <div id = "all_conv_wrapp">
     <h1>Speech tests</h1>
 
-    {% for speech in speeches %}
-                        
-        {% include 'site/read/single/single_speech.html'%}
-                        
-    {% endfor %}
+    {% include "site/read/single/loop_speech.html" with speeches=speeches %}
+   
 
-    {% include 'site/forms/speech/htmx_get_new_speech.html' %}
+    {% include 'site/forms/speech/htmx_get_new_speech.html' %} -->
 </div>
 
 {% endblock %}
