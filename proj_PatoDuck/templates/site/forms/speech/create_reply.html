@@ -7,18 +7,20 @@
         id = "new_speech_form"
         class=""
         
-        _="on htmx:afterRequest remove me"
-
-        hx-post=    "{% url 'create_speech' conv_pk %}"
-        hx-target=  "#all_conv_wrapp"
+        _="on htmx:afterRequest remove #new_linear_speech_button
+            remove me"
+        {# because it can throw a wrench looking for unique speechs and break the conv #}
+        
+        hx-post=    "{% url 'create_reply' reply_to_pk %}"
+        hx-target=  "#speech-{{ reply_to_pk }}"
         hx-swap=    "beforeend"
-        hx-on*:after-request=   "this.reset()"
+        hx-on*:after-request=   "this.reset()" {# leaving in case i need it #}
     >
     
         {% csrf_token %}
 
         {{ form }}
-        <button type="submit"> Submit Speech</button>
+        <button type="submit"> Submit Reply</button>
     </form>
 </div>
 

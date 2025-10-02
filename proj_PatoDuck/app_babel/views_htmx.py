@@ -16,11 +16,13 @@ from .babel_tools import *
 #? And when you find out, you'll eventually mess up how the forms are sent
 #? And you'll triple the time trying to test something simple
 
-
+def htmx(fn_name):
+    fn_intro(fn_name, "htmx")
 
 
 def htmx_get_new_speech_form(request,conv_pk):
     #TODO: Add htmx request for this function(see create_speech.html)
+    htmx("htmx_get_new_speech_form")
     conv = get_object_or_404(Conversation,id=conv_pk)
     
     initial_values = {
@@ -40,6 +42,28 @@ def htmx_get_new_speech_form(request,conv_pk):
         "conv_pk" : conv_pk
     }
     return render(request,'site/forms/speech/create_speech.html', context)
+
+def htmx_get_new_reply_form(request,reply_to_pk):
+    htmx("htmx_get_new_reply_form")
+    
+    reply_to = get_object_or_404(Speech,id=reply_to_pk)
+    
+    initial_values = {
+            'conversation' : reply_to.conversation,
+            'previous_speech' : reply_to,
+            'txt_en' : "LOLOLOL",
+            'name' : "Reply Test Name"
+            #'line_hash' : create_hash(), # ! Just do a better job here with a randomizer when the form is valid.
+            #TODO: 'name' : create_name(conv),
+        }
+    
+    form = ReplyCreateForm(initial=initial_values)
+    
+    context = {
+        "form" : form,
+        "reply_to_pk" : reply_to.id
+    }
+    return render(request,'site/forms/speech/create_reply.html', context)
 
 
 def htmx_get_edit_speech_form(request,speech_pk):

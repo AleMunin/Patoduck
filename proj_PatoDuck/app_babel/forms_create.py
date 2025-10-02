@@ -124,3 +124,42 @@ class SpeechCreateForm(ModelForm):
             
         }
                 
+   
+class ReplyCreateForm(ModelForm):
+    
+    #? for now this is a different form in case i need to make modifications to it
+    
+    
+    class Meta:
+        model = Speech
+        #fields = '__all__'
+        
+        fields = [
+            "name",
+            "txt_en",
+            "txt_pt",
+            "txt_es",
+            "conversation",
+            "previous_speech",
+        ]
+        
+        widgets = {
+            'txt_en' : forms.Textarea(attrs={
+                'class': 'form-field',
+                'cols': 2,
+                'rows': 2, 
+            }),
+            
+            'txt_pt' : forms.Textarea(attrs={
+                'class': 'form-field',
+                'cols': 2,
+                'rows': 2, 
+            }),
+            
+            'txt_es' : forms.Textarea(attrs={
+                'class': 'form-field',
+                'cols': 2,
+                'rows': 2,
+            }),
+        }
+     

@@ -42,8 +42,9 @@
 
     {% include "site/read/single/loop_speech.html" with speeches=speeches %}
    
-
-    {% include 'site/forms/speech/htmx_get_new_speech.html' %} -->
+    {% if conv.is_linear %}
+        {% include 'site/forms/speech/htmx_get_new_speech.html' %} -->
+    {% endif %}
 </div>
 
 {% endblock %}

@@ -167,23 +167,56 @@ def conversation_create_view(request):
 
 def speech_create_view(request,conv_pk):
     
+    fname = "\n \033[33m validate_reply \033[0m"
+    fn_intro("speech_create_view")
     #conv = get_object_or_404(Conversation,id=conv_pk)
         
     if request.method == 'POST':
         form = SpeechCreateForm(request.POST)
         
         if form.is_valid():
-            print("Called !!!!!!!!!!!!!!!!!!!!!!")
-            validate_reply(form.save(commit=False))          
+            print(f"{fname}: Form was valid")
+            speech = validate_reply(form.save(commit=False))          
+            context = {
+                'speech' : speech
+            }
             
-            return HttpResponse("This was a triumph")
-          
+            print(f"{fname}: Will now render back the single speech")
+            #return HttpResponse("This was a triumph")
+            return render(request,'site/read/single/single_speech.html', context)
+
         else:
             msg("Speech Form was invalid")
             return HttpResponse(form.errors.items())
     else:
         msg("speech_create_view did receive a non-POST request")
 
+
+def reply_create_view(request,reply_to_pk):
+    
+    previous = get_object_or_404(Speech,id=reply_to_pk)
+        
+    if request.method == 'POST':
+        form = ReplyCreateForm(request.POST)
+        
+        if form.is_valid():
+            print("Called !!!!!!!!!!!!!!!!!!!!!!")
+            
+            reply = form.save(commit=False)
+            reply.previous_speech=previous
+            reply = validate_reply(reply)
+            
+            context = {
+                'speech' : speech
+            }
+            
+            #return HttpResponse("This was a triumph") #todo: change to render it on page
+            return render(request,'site/read/single/single_speech/.html', context)
+        else:
+            msg("Reply Speech Form was invalid")
+            return HttpResponse(form.errors.items()) #todo maybe format this into a function
+    else:
+        msg("speech_create_view did receive a non-POST request")
 
             
 # ? Edit Profiles

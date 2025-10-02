@@ -16,13 +16,31 @@ def msg(txt,title="ERROR"):
     """
     pprint.pprint(f"""
            --------------------------------
-                        [[ERROR]]
+                        [[{title}]]
            
            
                 {txt}
            
            --------------------------------
            """)
+
+def fn_intro(fn_name, type="view"):
+    
+    end = " \033[0m "
+    
+    match type:
+        case "view":
+            start = " \033[1;32m " #green
+            
+        case "validation":
+            start = " \033[31m " # red
+            
+        case "htmx":
+            start = " \033[36m "  #blue
+
+    msg = f" \n\n ------------- \n {start} {fn_name} {end} begins : \n"
+
+    print (msg)
 
 def form_errors(errors):
     #? input is form.errors.items()
@@ -102,26 +120,37 @@ def give_last_speech(conv_pk):
     False -> If forked
     
     """
+    fname = "\n \033[33m give_last_speech \033[0m"
+    fn_intro("give_last_speech", "validation")
+    
     #todo maybe make a check if it is a Speech object or a string
     conv = get_object_or_404(Conversation,id=conv_pk)
     
     if conv.broken_chain:
-        msg("last_speech: Conversation is broken. Sort your poopoo together")
+        msg(f"{fname}: Conversation is broken. Sort your poopoo together")
         return False#, False
     
     if conv.is_linear:
-        
+        #? Rememeber: the following query only works if the code is linear
         try:
-            if (last_speech := Speech.objects.filter(conversation=conv_pk, previous_speech=None)):
+            
+            #! Consider change this if you add next_speech (it will be objects.filter(next_speech=None))
+            last_speech = Speech.objects.filter(
+                conversation=conv_pk,
+                replies__isnull=True #? "replies" here is the related_name for previous_speech
+                )
+            
+            if last_speech:
                 
-                print('\n\n give_last_speech: Linear speech, trying to find last') 
+                print(f'{fname}: Linear speech, trying to find last') 
                 pprint.pprint(last_speech)
+                print ('\n\n')
                 
                 return last_speech.first()#, True
         
         except Speech.MultipleObjectsReturned:
         
-            msg("last_speech: Multiple Lasts, but marked as linear marking the conversation as broken")
+            msg(f"{fname}: Multiple Lasts, but marked as linear marking the conversation as broken")
             break_conv(conv_pk)
             
             return None#, False
@@ -133,11 +162,11 @@ def give_last_speech(conv_pk):
             
             if not Speech.objects.filter(conversation=conv_pk):
                 
-                msg("last_speech: No posts, nothing wrong except the fact this function was called", "ODD")
+                msg(f"{fname}: No posts, nothing wrong except the fact this function was called", "ODD")
                 
                 return (None, True) #? Empty new conversations are empty
             else:
-                msg("last_speech: No lasts. Possible full cycle and infinite loop. Breaking conv for good measure")
+                msg(f"{fname}: No lasts. Possible full cycle and infinite loop. Breaking conv for good measure")
                 break_conv(conv_pk)
                 
                 return False#, False
@@ -166,6 +195,7 @@ def validate_reply(speech):
         - form.is_valid() returning true
     """
     print("\n\n")
+    fname = "\n \033[33m validate_reply \033[0m"
     #pprint.pprint(speech.conversation.description)
     print ("--------------------------------------")
     
@@ -175,18 +205,24 @@ def validate_reply(speech):
     
     #last_speech, linear = give_last_speech(conv.id)
     last_speech = give_last_speech(conv.id)
-    print ("Nachos!")
     linear = conv.is_linear # TODO: make validation there
     
     if speech.previous_speech is not None:
         parent = speech.previous_speech
     else:
+        print(f"{fname}: previous speech is none")
+        
         if not has_first_speech(conv.id):
+            
+            print(f"{fname}: No first speeches. Saving")
+            
             speech.is_first = True
             speech.save()
             
             return speech #? mostly just to break the function
         elif last_speech:
+            
+            print(f"{fname}: linear, saving [{speech}] as a reply to [{last_speech}]")
             
             speech.previous_speech = last_speech
             speech.save()
@@ -197,36 +233,36 @@ def validate_reply(speech):
             return speech
         else:
             # todo: maybe deal with orphans here?
-            msg("validate_reply: Odd scenario, not saving speech")
+            msg(f"{fname} Odd scenario, not saving speech")
             
             return False
     
     #? Check for other options ------------------------------
     
-    if linear: # todo and parent.next_speech is speech: #? linear edit
-        speech.save()
-            
-    elif linear: #todo and parent.next_speech is None: #? new speech in linear
+    print(f"{fname}: [{speech}] has previous_speech ( {speech.previous_speech})")
+    
+    forks = Speech.objects.filter(previous_speech=parent)
+    if (forks.count() == 1) and forks.first() is speech:
         
-        # todo: parent.next_speech = speech
-        parent.save()
+        print(f"{fname} [{speech}] is being saved")
         speech.save()
-        
-    #elif (not linear and parent.next_speech is speech) or (parent.next_speech is not None): #? If harmlessly/temporarily broken
-    else:  #? this more general approach should be safer
-        for fork in Speech.objects.filter(previous_speech=parent): #? this could be a single id but this is safer
+        return speech
+    
+    else: 
+        for fork in forks: #? this could be a single id but this is safer
             fork.is_fork = True
             fork.save()
         
        # todo:  parent.next_speech = None #? if child wasn't in the loop you have bigger problems
-        parent.has_fork = True
+        parent.has_fork = True #todo: considering this is outdated by now
         
-        speech.is_fork = True #? for good measure
+        #speech.is_fork = True #? for good measure
         conv.is_linear = False #? same here
         
         
         conv.save()
         parent.save()
         speech.save()
+    
 
     return speech

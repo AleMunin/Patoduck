@@ -23,9 +23,10 @@
 
     <button
         class="btn btn-show btn-htmx"
-        hx-swap = "innerHTML"
+        hx-swap = "afterend"
+        hx-post="{% url 'get_speech_reply_form' speech.id %}"
 
-        hx-target="#form_replyto_{{ speech.id}}"
+        hx-target="#speech-{{ speech.id }}"
         _=""
     >
         Reply
