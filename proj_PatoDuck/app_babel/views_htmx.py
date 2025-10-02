@@ -32,7 +32,7 @@ def htmx_get_new_speech_form(request,conv_pk):
             #'line_hash' : create_hash(), # ! Just do a better job here with a randomizer when the form is valid.
             #TODO: 'name' : create_name(conv),
             'txt_en' : "LOLOLOL",
-            'name' : "Test Name"
+            'name' : "!Auto!"
         }
     
     form = SpeechCreateForm(initial=initial_values)
@@ -52,7 +52,7 @@ def htmx_get_new_reply_form(request,reply_to_pk):
             'conversation' : reply_to.conversation,
             'previous_speech' : reply_to,
             'txt_en' : "LOLOLOL",
-            'name' : "Reply Test Name"
+            'name' : "!Auto!"
             #'line_hash' : create_hash(), # ! Just do a better job here with a randomizer when the form is valid.
             #TODO: 'name' : create_name(conv),
         }

@@ -41,7 +41,7 @@ urlpatterns = [
     
     
     path('create/speech/<conv_pk>', speech_create_view, name='create_speech'),
-    path('create/speech/<reply_to_pk>', reply_create_view, name='create_reply'),
+    path('create/reply/<reply_to_pk>', reply_create_view, name='create_reply'),
     # Edit Forms
     
     path('edit/conv/<pk>', edit_conv_view, name='edit_conv' ), #? Remember that this will create speeches too

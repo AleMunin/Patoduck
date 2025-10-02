@@ -3,6 +3,7 @@ from .validations import *
 
 from django.shortcuts import render, redirect, get_object_or_404
 import pprint
+from string import ascii_uppercase
 
 #? Yes, this code is wet
 #? I am fully aware there are a lot of redundant queries
@@ -64,18 +65,49 @@ def conv_create_name(conv):
 
 # TODO: Test this on the new code
 
-def speech_create_name(conv,reply_to=None): # create names for speeches
-    if conv.is_linear:
-        name = f"{conv.title} [{len(Speech.objects.filter(conversation=conv.id))}]"
-    elif reply_to is not None:
-        num = len(Speech.objects.filter(previous_speech=reply_to))
-        num += 1
-        name = f"F-{reply_to.name} [{num}]"
+def speech_create_name(obj=None,model_type=None): # create names for speeches
+    """
+    obj = either Speech or Conversation
+    model_type = "speech" or "conv"
+    returns string
+    #! DO NOT use primary key, pass  the object.
+
+    """
+    
+    if obj:
+        match model_type:
+            case "speech": # Will get the name from parent
+                ...
+                
+            case "conv":
+                ...
+                 # check if it is the first
+                 # check if linear
+                 # if not throw an error
+    else:
+        ... # raise error and give default name
+
+    ...
+    
+def create_speech_name(conv,reply_to=None): # create names for speeches
+    if reply_to is not None: #? careful, this can break
+        num = 0 + Speech.objects.filter(previous_speech=reply_to).count()
+        name = f"{reply_to.name}{ascii_uppercase[num]}"
+        
+    elif conv.is_linear: #? careful: replies can happen before conv is marked as non-linear
+        letter = ascii_uppercase [ Speech.objects.filter(conversation=conv.id).count() ]
+        name = f"{conv.title} — {letter}"
+        
+    else:
+        
+        name = f"{conv.title}: Orphan !!!!"
+        
+        msg("create_name was called to non-linear and reply-less. Check {conv.title}","ODD")
     return name
+
 
 # --------------------------------------------------------------------
 
-    ...
 
 
 def has_first_speech(conv_pk,return_speech=False):
@@ -129,6 +161,7 @@ def give_last_speech(conv_pk):
     if conv.broken_chain:
         msg(f"{fname}: Conversation is broken. Sort your poopoo together")
         return False#, False
+
     
     if conv.is_linear:
         #? Rememeber: the following query only works if the code is linear
@@ -207,6 +240,12 @@ def validate_reply(speech):
     last_speech = give_last_speech(conv.id)
     linear = conv.is_linear # TODO: make validation there
     
+    
+    if "!Auto!" in speech.name: #? this will have a chance to break until linear function check is made
+        print(f"{fname}: Automatic name procedure ")
+        speech.name = create_speech_name(conv,speech.previous_speech)
+        print(f"New name: {speech.name}")
+        
     if speech.previous_speech is not None:
         parent = speech.previous_speech
     else:
@@ -221,6 +260,15 @@ def validate_reply(speech):
             
             return speech #? mostly just to break the function
         elif last_speech:
+            
+            if last_speech.id == speech.id: #edit
+                print(f"{fname} Edit detected:")
+                print(f"last (linear): {last_speech.id}")
+                print(f"submitted:     {speech.id}")
+                print("------")
+                
+                speech.save()
+                return speech
             
             print(f"{fname}: linear, saving [{speech}] as a reply to [{last_speech}]")
             

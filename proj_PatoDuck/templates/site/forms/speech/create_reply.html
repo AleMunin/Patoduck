@@ -7,8 +7,9 @@
         id = "new_speech_form"
         class=""
         
-        _="on htmx:afterRequest remove #new_linear_speech_button
-            remove me"
+        _="on htmx:afterRequest 
+            remove me
+            remove #new_linear_speech_button" {# keep this bellow, or it won't remove itself if the id is not there anymore#}
         {# because it can throw a wrench looking for unique speechs and break the conv #}
         
         hx-post=    "{% url 'create_reply' reply_to_pk %}"
