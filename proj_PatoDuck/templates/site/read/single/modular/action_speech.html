@@ -1,0 +1,49 @@
+<div class="speech-edit_form" 
+    id="form_wrap_{{ speech.id }}" 
+>
+
+</div>
+
+<div class="speech-buttons" >
+
+    
+
+    {% if speech.id %}
+    {# This check might not be necessary anymore #}
+    <button
+        class="btn btn-show btn-htmx"
+        hx-swap = "innerHTML"
+        hx-post="{% url 'get_speech_edit_form' speech.id %}"
+        
+        hx-target= "#form_wrap_{{ speech.id }}"
+        _=""
+    >           Edit
+            {# Add hyperscript to toggle classes #}
+    </button>
+
+    <button
+        class="btn btn-show btn-htmx"
+        hx-swap = "innerHTML"
+
+        hx-target="#form_replyto_{{ speech.id}}"
+        _=""
+    >
+        Reply
+    </button>
+
+
+
+    {% else %}
+    <h1> This is an empty ID</h1>
+    {% endif %}
+    
+
+
+</div>
+
+<div class="speech-reply_form hidden"
+    id="form_replyto_{{ speech.id}}"
+>
+
+</div>
+

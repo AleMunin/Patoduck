@@ -1,0 +1,57 @@
+
+<h2 class = "speech-print-title">
+    Name: {{ speech.name }}
+</h2>
+<header class = "speech-reply info">
+    <p>Reply to [ {{ speech.previous_speech}} ]</p>
+    <p>Replies: {{ speech.replies.all|length }}</p>
+    
+</header>
+
+<div class="speech-speaker hidden">
+    
+</div>
+
+<div class= "speech-question hidden">
+
+</div>
+
+<div class = "speech-print-translations">
+    <div class = "language_wrap wrap">
+        
+        {# Here is the core part of speeches #}
+        
+        {# Add Fork Question here too #}
+        <p class="txt txt-en"> <strong>EN:</strong>  {{ speech.txt_en }}  </p>
+        <p class="txt txt-pt"> <strong>PT:</strong>  {{ speech.txt_pt }}  </p>
+        <p class="txt txt-es"> <strong>ES:</strong>  {{ speech.txt_es }}  </p>
+
+    </div>
+
+</div>
+
+
+<div class="speech-localized hidden">
+    <ul>
+        <li>Localized PT:</li>
+        <li>Localized ES:</li>
+    </ul>
+</div>
+
+<div class="speech-proofread hidden">
+    <ul>
+        <li>Proofread EN:</li>
+        <li>Proofread PT:</li>
+        <li>Proofread ES:</li>
+    </ul>
+</div>
+
+
+<footer class = "speech-footer-data hidden">
+    {# Will put some of those on the header instead#}
+
+    <div><strong>Previous Speech:</strong></div>
+    <div><strong>Replies:</strong></div>
+    <div><strong>Next is Cycled:</strong></div>
+
+</footer>

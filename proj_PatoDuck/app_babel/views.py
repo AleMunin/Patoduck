@@ -1,5 +1,6 @@
 import pprint
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 from django.urls import reverse
 
 # my own libraries
@@ -164,57 +165,28 @@ def conversation_create_view(request):
 
     return render(request,'site/forms/conversation/create_conversation.html', {'form' : form })
 
-
-def linear_create_view(request,conv_pk):
+def speech_create_view(request,conv_pk):
     
-    conv = get_object_or_404(Conversation,id=conv_pk)
-    
-def fork_create_view(request,conv_pk,prev_pk):
-    ...
-
-def old_speech_create_view(request,conv_pk,reply_to=None,fork_form=False):
-    
-    conv = get_object_or_404(Conversation,id=conv_pk) # prevents speech to be orphan
-    
-    if request.method != "POST":
-        form = SpeechCreateForm()
+    #conv = get_object_or_404(Conversation,id=conv_pk)
         
-        # if reply_to is None:
-            # query if conv has speeches, if not mark this speech form as is_first
-        # if reply_to has fork, call function to find out which letter should it have
-        # if reply_to has no fork, and fork_form is True, add first letter.
-        # if reply_to has no fork, and fork_form is False, it will be linear
-        
-        
-        context = {
-            "form": form
-        }
-        
-        # TODO: return render(request,'site/forms/speech/create_speech.html', {'form' : form })
-    
-    else:
+    if request.method == 'POST':
         form = SpeechCreateForm(request.POST)
+        
         if form.is_valid():
+            print("Called !!!!!!!!!!!!!!!!!!!!!!")
+            validate_reply(form.save(commit=False))          
             
-            # is it a response
-            
-            
-            form.save()
+            return HttpResponse("This was a triumph")
+          
+        else:
+            msg("Speech Form was invalid")
+            return HttpResponse(form.errors.items())
+    else:
+        msg("speech_create_view did receive a non-POST request")
+
+
             
 # ? Edit Profiles
-
-
-def add_html_forks(speech):
-    # just say fuck it and print safe through here
-    all_forks = [speech]
-        
-    forks = Speech.objects.filter(previous_speech=speech.id)
-
-    for fork in forks:
-        all_forks.append( add_forks(fork) )  
-        
-
-    return all_forks
 
 def edit_conv_view(request,pk):    
     """
@@ -225,11 +197,7 @@ def edit_conv_view(request,pk):
     
     def add_forks(speech):
         
-        #all_forks =[]
-        #all_forks.append(speech)
-        
         all_forks = [speech]
-        
         forks = Speech.objects.filter(previous_speech=speech.id)
 
         for fork in forks:
@@ -240,7 +208,7 @@ def edit_conv_view(request,pk):
         pprint.pprint(all_forks)
         return all_forks
     
-    conv = Conversation.objects.get(id=pk)
+    conv = Conversation.objects.get(id=pk) #todo: maybe put get or 404 
 
     # POST HANDLING --------------------------------
 
@@ -261,13 +229,7 @@ def edit_conv_view(request,pk):
     # Speech list handling -------------------------
         #? This could probably replace the tree_of_speeches code
     
-    #all_speeches = []
-
     if (first_speech := has_first_speech (pk,True)):
-        # TODO: Probably should use prefetch here, but screw it
-        
-        #all_speeches.append(first_speech.first())
-        #all_speeches.append(add_forks(first_speech.first()))
         all_speeches = add_forks(first_speech.first())
     else:
         all_speeches = []
@@ -281,72 +243,28 @@ def edit_conv_view(request,pk):
 
     }
     
-    print("")
-    print("")
-    print("")
-    print("")
-    print("")
+    print("\n\n\n\n\n")
     pprint.pprint(all_speeches)
     
     return render(request,'site/forms/conversation/edit_conv.html', context)
 
-
-def speech_create_view(request,conv_pk):
-    conv = get_object_or_404(Conversation,id=conv_pk)
+def edit_speech_view(request,speech_pk):
+    #? This does not return forms, check htmx views
+    
+    print("\n\n edit_speech request: \n\n")
+    
+    speech = get_object_or_404(Speech,id=speech_pk)
     
     if request.method == 'POST':
-        form = SpeechCreateForm(request.POST)
-
+        form = SpeechEditForm(request.POST, instance=speech)
+        
+        
         if form.is_valid():
-            
-            print (" FORM WAS VALID, TIME DIDN'T BITCH SO FAR")
-            
-            
-            form.conversation = conv
-            
-            print(" Right before saving, let's see" )
-            form.save()
-            
-            return HttpResponse("<h1> Saved! </h1>")
-            # if not has_first_speech(conv_pk):
-            #     form.is_first = True
-            #     form.save()
+            edited_speech = form.save(commit=False)
+            if validate_reply(edited_speech):
                 
-            #     print("speech_create_view: First Speech Saved")
-            #     return HttpResponse("Nachoooos")
-                
-            # else:
-            #     # TODO: is_first_speech is not throwing errors right now. So careful with that
-            #     if conv.is_linear:
-                    
-            #         try:
-                        
-            #            last_speech = Speech.objects.filter(conversation=conv_pk, next_speech = None)
-            #            form.previous_speech = last_speech
-            #            last_speech.next_speech = form.save()
-            #            last_speech.save()
-                       
-                       
-                       
-            #         except Speech.DoesNotExist:
-            #             conv.broken_flag = True
-            #             conv.save()
-                        
-            #             print( " speech_create_view ERROR: Linear Conversation has no empty next speeches. Did you edit a ciruclar talk by accident?")
-
-            #         except Speech.MultipleObjectsReturned:
-            #             conv.broken_flag = True
-            #             conv.save()
-            #             # TODO: Make a log of them somewhere
-            #             print (" speech_create_view ERROR: Two or more next_speech fields empty on a linear query. Possible fork unmarked")
-            #     else:
-            #         ...
-            #         # TODO: Deal with forks here? Idk.
-                        
-            # ? Add is response to
-        else:
+                print("\n\n\n\n\n\n Okay so far \n\n\n\n")
+                return render(request,'site/read/single/single_speech.html', { 'speech' : speech } )
             
-            print( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   Form invalid?")
+            # replace the form rendering the speech again
             
-            for field, errors in form.errors.items():
-                print(f"{field}: {errors}")

@@ -43,4 +43,40 @@ class ConversationEditForm(ModelForm): #edits the conversation, not the speeches
         }),
     }
 
+
+class SpeechEditForm(ModelForm):
+    #? It is just not worth to edit the conversation. If you need that, go on admin
+    class Meta:
+        model = Speech
+        
+        fields = [
+            'txt_en',
+            'txt_pt',
+            'txt_es',
+            
+            'name',
+            'previous_speech'
+        ]
+        
+        widgets={
+                'txt_en': forms.Textarea(attrs={
+                'class': 'form-field',
+                'cols': 2,
+                'rows': 2, 
+            }),
+                'txt_pt': forms.Textarea(attrs={
+                'class': 'form-field',
+                'cols': 2,
+                'rows': 2, 
+            }),
+                'txt_es': forms.Textarea(attrs={
+                'class': 'form-field',
+                'cols': 2,
+                'rows': 2, 
+            }),
+                # 'previous_speech': forms.ModelChoiceField(
+                #     queryset=Speech.objects.filter()
+                # )
+        }
+        
         

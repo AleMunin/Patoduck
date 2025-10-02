@@ -9,14 +9,15 @@
 
         <h1> {{ speech.name }} </h1>
 
-
-        {{ speech|pprint }}
+        {#Keep this line for debugging #}
+        {# {{ speech|pprint }} #}
 
         {% include "site/read/single/single_speech.html" with speech=speech %}
 
         <p>----- end of {{ speech.name}} </p>
 
     {% endif %}
+    
     {% if speech|length > 0 %}
       {% include "site/read/single/loop_speech.html" with speeches=speech %}
     {% endif %}

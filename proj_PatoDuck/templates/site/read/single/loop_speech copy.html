@@ -1,0 +1,39 @@
+{# This goes for forks and replies #}
+
+{{ node|pprint }}
+
+
+
+<div class="node">
+    
+  
+ {% include "site/read/single/single_speech.html" with speech=node %}
+
+  
+  {% if  node.0 %}
+    <div class="item">{{ node.0.name }}</div>
+    
+        {% with forks=node.1 %}
+        {% if forks %}
+            <div class="forks">
+            {% for fork in forks %}
+                {% include "site/read/single/loop_speech.html" with node=fork %}
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+  
+  
+  
+    {% else %} {# This is for the end of branches #}
+
+    <h1> This is the else div</h1>
+    <!-- <div class="item">{{ node.name }} (First) </div>
+    <div>
+      {# include "site/read/single/single_speech.html" with speech=node #}
+    </div> -->
+  {% endif %}
+
+
+
+</div>

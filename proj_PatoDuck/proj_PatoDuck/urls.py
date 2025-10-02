@@ -44,10 +44,12 @@ urlpatterns = [
     # Edit Forms
     
     path('edit/conv/<pk>', edit_conv_view, name='edit_conv' ), #? Remember that this will create speeches too
+    path('edit/speech/<speech_pk>', edit_speech_view, name='edit_speech'), #? HTMX
+
 
     # HTMX requests
     
     path('forms/new_speech/<conv_pk>', htmx_get_new_speech_form, name = 'get_speech_form'),
-    path('forms/edit_speech/<pk>', htmx_get_edit_speech_form, name = 'get_speech_edit_form')
+    path('forms/edit_speech/<speech_pk>', htmx_get_edit_speech_form, name = 'get_speech_edit_form')
 
 ]

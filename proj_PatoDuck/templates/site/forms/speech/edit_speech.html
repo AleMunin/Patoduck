@@ -4,19 +4,22 @@
 
 <div class="could-be-modal">
     <form method="POST"
-        id = "new_speech_form"
+        id = "edit_speech_form_{{ speech_pk }}"
         class=""
-        _="on htmx:afterRequest remove me"
-        hx-post=    "{% url 'create_speech' conv_pk %}"
-        hx-target=  "#all_conv_wrapp"
+        
+        hx-post=    "{% url 'edit_speech' speech_pk %}"
+        hx-target=  "#speech-{{ speech_pk }}"
         hx-swap=    "beforeend"
-        hx-on*:after-request=   "this.reset()"
+
+        _="on htmx:afterRequest remove me"
     >
     
         {% csrf_token %}
 
         {{ form }}
-        <button type="submit"> Submit Speech</button>
+
+
+        <button type="submit"> Submit Edit</button>
     </form>
 </div>
 

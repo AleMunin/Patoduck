@@ -188,10 +188,24 @@ class Speech(models.Model):
         on_delete = models.PROTECT
     )
 
+    #? Speaker
+    
+    #? Portrait
+
+
     #? Status and flags -------------------------
     
     is_first = models.BooleanField(default=False)   # easier to track
+    #? has_fork
+    #? is_fork
 
+
+    #? Localized PT
+    #? Localized ES
+    
+    #? Proofread EN
+    #? Proofread PT
+    #? Proofread ES
 
     def __str__(self):
         return str(self.name)

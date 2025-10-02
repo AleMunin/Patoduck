@@ -82,13 +82,20 @@ class ConversationCreateForm(ModelForm):
 class SpeechCreateForm(ModelForm):
     class Meta:
         model = Speech
-        fields = '__all__'
+        #fields = '__all__'
         
-        # exclude = ('conversation', 
-        #            #'is_first', 
-        #            #'fork_letter',
-        #            )
+        fields = [
+            "name",
+            "txt_en",
+            "txt_pt",
+            "txt_es",
+            "conversation"
+        ]
         
+        # exclude = [
+        #     'is_first',
+        #     'previous_speech',
+        # ]
         widgets = {
             'txt_en' : forms.Textarea(attrs={
                 'class': 'form-field',
@@ -97,17 +104,23 @@ class SpeechCreateForm(ModelForm):
             }),
             
             'txt_pt' : forms.Textarea(attrs={
-            'class': 'form-field',
-            'cols': 2,
-            'rows': 2, 
+                'class': 'form-field',
+                'cols': 2,
+                'rows': 2, 
             }),
             
             'txt_es' : forms.Textarea(attrs={
                 'class': 'form-field',
                 'cols': 2,
                 'rows': 2,
-                
             }),
+                
+            # 'conversation' : forms.Select(attrs={
+            #    # 'readonly': 'readonly',
+            #     # 'class' : 'hidden'
+            # })
+                
+            
             
         }
                 
