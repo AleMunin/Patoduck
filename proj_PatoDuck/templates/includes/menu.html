@@ -1,4 +1,16 @@
 {% load static %}
+{# Carol: Fica a vontade de mexer como quiser, mas deixa fixo no topo #}
+
 <nav>
-    I'm a menu
+    <div><a href={% url "all_conv" %}>  All Conv </a></div>
+    <div><a href={% url "create_conv" %}> Create Conv  </a></div>
+
+    <div><a href={% url "all_char" %}> All Chars  </a></div>
+    <div><a href={% url "create_char" %}>  Create Char </a></div>
+
+    <div><a href={% url "all_location" %}> All Locations </a></div>
+    <div><a href={% url "create_location" %}> Create Locations  </a></div>
+
+    <div><a href={% url "all_quest" %}>  All Quests </a></div>
+    <div><a href={% url "create_quest" %}> Create Quests  </a></div>
 </nav>

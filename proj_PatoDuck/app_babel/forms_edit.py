@@ -2,6 +2,31 @@ from django.forms import ModelForm
 from django import forms
 from .models import *
 
+class CharacterEditForm(ModelForm):
+    class Meta:
+        model = Character
+        fields = "__all__"
+        
+class ActionEditForm(ModelForm):
+    class Meta:
+        model = Action
+        fields = "__all__"
+        
+class LocationEditForm(ModelForm):
+    class Meta:
+        model = Location
+        fields = "__all__"
+
+class QuestEditForm(ModelForm):
+    class Meta:
+        model = Quest
+        fields = "__all__"
+        exclude = [
+            "number_of_steps"
+        ]
+    # TODO: You might want to make a link for the conversations later
+    
+
 class ConversationEditForm(ModelForm): #edits the conversation, not the speeches
     class Meta:
         model = Conversation
@@ -55,7 +80,8 @@ class SpeechEditForm(ModelForm):
             'txt_es',
             
             'name',
-            'previous_speech'
+            'previous_speech',
+            'next_speech'
         ]
         
         widgets={

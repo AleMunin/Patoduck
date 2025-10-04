@@ -126,8 +126,9 @@ def quest_create_view(request): #creates form or save form for Quest
             # TODO: Check if there are no names like that before.
             form.save()
             return redirect('all_quest')
+    context = {'form' : form }
 
-    return render(request,'site/forms/quest/create_quest.html', {'form' : form })
+    return render(request,'site/forms/quest/create_quest.html', context)
 
 
 def location_create_view(request): #creates form or save form for Location
@@ -225,6 +226,55 @@ def reply_create_view(request,reply_to_pk):
 
             
 # ? Edit Profiles
+
+def edit_char_view(request,pk):
+    char = get_object_or_404(Character, id=pk)
+
+    if request.method == 'POST':
+        form = CharacterEditForm(request.POST, instance=char)
+        if form.is_valid():
+            print("\n\n\ FORM WAS VALID!")
+            form.save()
+            return redirect('all_char')
+        else:
+            msg("Form was invalid")
+    
+    form = CharacterEditForm(instance=char)
+
+    return render(request,'site/forms/char/edit_char.html', {'form' : form })
+
+
+def edit_quest_view(request,pk):
+    quest = get_object_or_404(Quest, id=pk)
+
+    if request.method == 'POST':
+        form = QuestEditForm(request.POST, instance=quest)
+        if form.is_valid():
+            print("\n\n\ FORM WAS VALID!")
+            form.save()
+            return redirect('all_quest')
+        else:
+            msg("Form was invalid")
+    
+    form = QuestEditForm(instance=quest)
+
+    return render(request,'site/forms/quest/edit_quest.html', {'form' : form })
+
+
+
+def edit_loc_view(request,pk):
+    loc = get_object_or_404(Location, id=pk)
+
+    if request.method == 'POST':
+        form = LocationEditForm(request.POST, instance=loc)
+        if form.is_valid():
+            form.save()
+            return redirect('all_location')
+    
+    form = LocationEditForm(instance=loc)
+
+    return render(request,'site/forms/location/edit_location.html', {'form' : form })
+
 
 def edit_conv_view(request,pk):    
     """

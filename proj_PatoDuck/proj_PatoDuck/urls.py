@@ -46,7 +46,9 @@ urlpatterns = [
     
     path('edit/conv/<pk>', edit_conv_view, name='edit_conv' ), #? Remember that this will create speeches too
     path('edit/speech/<speech_pk>', edit_speech_view, name='edit_speech'), #? HTMX
-
+    path('edit/char/<pk>', edit_char_view, name='edit_char' ),
+    path('edit/quest/<pk>', edit_quest_view, name='edit_quest' ),
+    path('edit/loc/<pk>', edit_loc_view, name='edit_loc' ),
 
     # HTMX requests
     

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{# might remove the extend part for modal #}
+
+{% block layout %}
+<div class="wrap">
+
+    <h4> Create Quest </h4>
+    <form method="POST">
+        
+        {% csrf_token %}
+        
+        {{form}}
+        <button type="submit"> Submit Quest</button>
+        <a href="{{  request.META.HTTP_REFERER }}">Cancel</a>
+
+    </form>
+
+</div>
+
+{% endblock %}

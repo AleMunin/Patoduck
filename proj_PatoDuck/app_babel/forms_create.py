@@ -2,6 +2,11 @@ from django.forms import ModelForm
 from django import forms
 from .models import *
 
+#TODO:
+# 1 - readonly fields don't work and disabled fields break form validation
+# 2 - I did hide the forms that just carry data, but did not hide the labels
+# 
+
 class CharCreateForm(ModelForm):
     class Meta:
         model = Character
@@ -33,6 +38,7 @@ class QuestCreateForm(ModelForm):
     class Meta:
         model = Quest
         fields = '__all__'
+        exclude = ['number_of_steps']
         
 class LocationCreateForm(ModelForm):
     class Meta:
@@ -115,10 +121,10 @@ class SpeechCreateForm(ModelForm):
                 'rows': 2,
             }),
                 
-            # 'conversation' : forms.Select(attrs={
-            #    # 'readonly': 'readonly',
-            #     # 'class' : 'hidden'
-            # })
+            'conversation' : forms.Select(attrs={
+               # 'readonly': 'readonly',
+                'class' : 'hidden'
+            })
                 
             
             
@@ -161,5 +167,15 @@ class ReplyCreateForm(ModelForm):
                 'cols': 2,
                 'rows': 2,
             }),
+            
+            'conversation' : forms.Select(attrs={
+               # 'readonly': 'readonly',
+                'class' : 'hidden'
+            }),
+            
+            'previous_speech' : forms.Select(attrs={
+               # 'readonly': 'readonly',
+                'class' : 'hidden'
+            })
         }
      

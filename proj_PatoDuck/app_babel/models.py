@@ -188,6 +188,19 @@ class Speech(models.Model):
         on_delete = models.PROTECT
     )
 
+
+    #! Avoid validation and loops through this
+    #! Give preference for this only to be cycled responses
+    
+    next_speech = models.ForeignKey(
+        'self',
+        blank = True,
+        null=True,
+        related_name="merges_back",
+        on_delete = models.PROTECT
+    )
+    
+    next_is_cycled = models.BooleanField(default=False) 
     #? Speaker
     
     #? Portrait

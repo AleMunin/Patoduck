@@ -2,7 +2,10 @@
 
 <div class="print-loc" id="print_loc_{{ loc.id }}">
     <header class="print-loc-header">
-        <h6> {{ loc.name }} </h6>
+
+        <h6> 
+            <a href="{% url 'edit_loc' loc.id %}">  {{ loc.name  }}</a>  
+        </h6>
         <ul>
             <li><strong>PT:</strong> {{ loc.name_pt }} </li>
             <li><strong>ES:</strong> {{ loc.name_es }} </li>

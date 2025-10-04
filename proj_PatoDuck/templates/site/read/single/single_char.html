@@ -2,7 +2,9 @@
 
 <div class="print-char" id="print_char_{{ char.id }}">
     <header class="print-char-header">
-        <h6> {{ char.name }} </h6>
+        <h6> 
+            <a href="{% url 'edit_char' char.id %}">  {{ char.name  }}</a>  
+        </h6>
         <ul>
             <li><strong>PT:</strong> {{ char.name_pt }} </li>
             <li><strong>ES:</strong> {{ char.name_es }} </li>
