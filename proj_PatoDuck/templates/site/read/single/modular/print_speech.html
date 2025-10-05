@@ -12,15 +12,23 @@
     
 </div>
 
-<div class= "speech-question hidden">
-
-</div>
-
 <div class = "speech-print-translations">
+    
+
+    {% if speech.is_fork %}
+    <div class= "speech-print-question">
+        <h6>Fork Question:</h6>
+        <p class="txt txt-en"> <strong>EN:</strong>  {{ speech.fq_en }}  </p>
+        <p class="txt txt-pt"> <strong>PT:</strong>  {{ speech.fq_pt }}  </p>
+        <p class="txt txt-es"> <strong>ES:</strong>  {{ speech.fq_es}}  </p>
+    </div>
+    {% endif %}
+
+
     <div class = "language_wrap wrap">
         
         {# Here is the core part of speeches #}
-        
+        <h6>Speech:</h6>
         {# Add Fork Question here too #}
         <p class="txt txt-en"> <strong>EN:</strong>  {{ speech.txt_en }}  </p>
         <p class="txt txt-pt"> <strong>PT:</strong>  {{ speech.txt_pt }}  </p>
@@ -47,11 +55,39 @@
 </div>
 
 
-<footer class = "speech-footer-data hidden">
+<footer class = "speech-footer-data">
     {# Will put some of those on the header instead#}
+    <nav>
+        
+        {% if not speech.previous_speech %}
+        <div>
+            No previous speeches
+        </div>
+        {% else %}
+        <div>
+            <strong>Previous Speech:</strong>            
+            <a  href="#speech-{{ speech.previous_speech.id }}"> {{ speech.previous_speech }} </a>
+        </div>
+        {% endif %}
 
-    <div><strong>Previous Speech:</strong></div>
-    <div><strong>Replies:</strong></div>
-    <div><strong>Next is Cycled:</strong></div>
+        <ul><h6>Replies:</h6>
+            {% if speech.next_speech %}
+
+            <strong>Main Next Speech:</strong>            
+            <a  href="#speech-{{ speech.next_speech.id }}"> {{ speech.next_speech }} </a>
+            {% endif %}
+
+            {% if speech.has_fork %}
+            <ul>
+                {% for fork in speech.replies.all %}
+                <li>
+                    <a href="#speech-{{fork.id}}" > {{ fork.name }} </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        
+    </nav>
+    <div><strong>Next is Cycled:</strong> {{ speech.next_is_cycled }} </div>
 
 </footer>

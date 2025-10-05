@@ -52,6 +52,13 @@ def form_errors(errors):
         error_msg += f"<p> {error} </p>"
         
     return error_msg
+            
+def break_conv(conv):
+    if type(conv) is not Conversation:
+        conv = get_object_or_404(Conversation, id=conv)
+    
+    conv.broken_chain = True
+    conv.save()
                         
 def obj_check():
     # check if it is is_object or a string, if a string it will query
@@ -106,19 +113,26 @@ def create_speech_name(conv,reply_to=None): # create names for speeches
     return name
 
 
+
+
+
 # --------------------------------------------------------------------
 
 
 
-def has_first_speech(conv_pk,return_speech=False):
+def has_first_speech(conv,return_speech=False):
     """Checks if an object has a first speech or not
     Returns False if it doesn't have one
     Returns True if it has
     Returns Speech Object if it has one and return_speech was flagged true
     
     """
+    if type(conv) is not Conversation:
+        conv = get_object_or_404(Conversation, id=conv)
+    
+    
     try:
-        if (first_speech := Speech.objects.filter(conversation=conv_pk, is_first=True)):
+        if (first_speech := Speech.objects.filter(conversation=conv, is_first=True)):
             if return_speech:
                 return first_speech
             else:
@@ -136,7 +150,38 @@ def has_first_speech(conv_pk,return_speech=False):
         
     except Speech.DoesNotExist: #no results with first speech
         return False
-                       
+
+def same_conv(speech):
+    fname = "\n \033[33m same_conv \033[0m"
+    fn_intro("same_conv", "validation")
+    
+    nxt = speech.next_speech
+    prev = speech.previous_speech
+    same = False
+    
+    
+    if (speech.conversation == nxt.conversation or nxt is None) and (speech.conversation == prev.conversation or prev is None):
+        same = True
+        print(f"{fname}: All Okay")
+    else:
+        print(f"""{fname}: Conversations do not match
+              
+              Previous Speech [{prev}] is part of [{prev.conversation}]
+              
+              Speech [{speech}] is part of [{speech.conversation}]
+              
+              Next Speech: Speech [{nxt}] is part of [{nxt.conversation}]
+              
+              
+              !!! Breaking [{speech.conversation}]
+              """
+              )
+        break_conv(speech.conversation)
+    
+    return same
+    
+    
+                     
 def give_last_speech(conv_pk):
     """
     Returns 2 values
@@ -212,10 +257,90 @@ def give_last_speech(conv_pk):
 #     last, linear = give_last_speech(conv_pk)
 #     return linear
 
+def cycle_check(speech, send_list=False):
+    fname = "\n \033[33m cycle check \033[0m"
+    #? add intro
+    
+    confluents = Speech.objects.filter(next_speech=speech)
+    
+    if not confluents: #? if no results
+        print(f"{fname} [{speech}] has no speeches leading to it")
+        #? unlikely to run on the final product, save for first_speeches
+        
+        return False
+    
+    elif (confluents.count() == 1) and (prev := confluents.first() == speech):
+        print(f"{fname} [{speech}] has only {prev} leading to it (linear node)")
+        
+        #? you can validate previous_speech here. But it is better not to
+        
+        return False #? They seem to be linear
+    
+    else: 
+        
+        for conflu in confluents:
+            if speech.previous_speech == conflu:
+                print(f"{fname}: [{speech}] has a linear connection to [{conflu}]")
+                continue
+            if not conflu.next_is_cycled:
+                print(f"{fname}: [{conflu}] cycles back to [{speech}], but is not marked as a cycle back. Fixing that")
+                
+                conflu.next_is_cycled = True
+                conflu.save()
+            else:
+                print(f"{fname}: [{conflu} cycles to [{speech} as expected] ")
+        
+        if send_list:
+            return confluents
+        
+        #? you can also maybe add an edit and then return a speech.save()
+        return True
+    
+
+def linear_check(conv):
+    # ! Warning, this does not check next_speech.
+    
+    fname = "\n \033[33m linear check \033[0m"
+    fn_intro("linear check", "validation")
+
+    if type(conv) is not Conversation:
+        conv = get_object_or_404(Conversation, id=conv)
+    
+    # ------------------------
+    linear = True
+    speech = has_first_speech(conv,True)
+
+    while linear:
+    
+        forks = Speech.objects.all(previous_speech = speech)
+        
+        count = forks.count()
+        if count == 0: #? end of linear speech
+            
+            print(f"{fname}: {conv} is linear and ends at {speech}.")
+            break
+        
+        elif forks.count() > 1: #? if there are forks, it is not linear
+            
+            linear = False
+            
+            print(f"{fname}: {conv} is not linear when it gets to {speech}.")
+            pprint.pprint(forks)
+            
+            if conv.is_linear:
+                print(f"{fname}: {conv} was not previously marked as linear. Fixing it.")
+                conv._is_linear = False
+                conv.save()
+            
+        else:           #? if there is only one result, it is linear, keep going
+            speech = forks.first() 
+    
+    return linear
 
 
+#TODO: use has_fork, is_fork, and check for empty fork questions
 
-def validate_reply(speech):
+def validate_reply(speech, distrust_conv = False):
     """
     Validates the hierarchy, for:
         - New Speeches
@@ -227,44 +352,68 @@ def validate_reply(speech):
         - conversation not being broken.
         - form.is_valid() returning true
     """
+    
+    #? Function log data --------------------------------------
     print("\n\n")
     fname = "\n \033[33m validate_reply \033[0m"
     #pprint.pprint(speech.conversation.description)
     print ("--------------------------------------")
     
+    
+    #? Set up --------------------------------------
+    
     conv = speech.conversation
-    
-    #? Check if this is the first speech --------------------
-    
     #last_speech, linear = give_last_speech(conv.id)
     last_speech = give_last_speech(conv.id)
-    linear = conv.is_linear # TODO: make validation there
     
+    if distrust_conv:
+        linear = linear_check(conv) #? this function is harmless on single submits but heavy and redundant on conversation checks
+    else:
+        linear = conv.is_linear
+    
+    
+    #? Name handling --------------------------------------
     
     if "!Auto!" in speech.name: #? this will have a chance to break until linear function check is made
         print(f"{fname}: Automatic name procedure ")
         speech.name = create_speech_name(conv,speech.previous_speech)
         print(f"New name: {speech.name}")
+    
+    #? Actual validation --------------------------------------
+    
+    
+    #? Short next speech check
+    
+    if speech.next_speech:
+        if speech.next_speech.previous_speech == speech:
+            print(f"{fname}: {speech} and {speech.next_speech} reference each other")
+            speech.next_is_cycled = False #? seems redundant but edits can change this value
+        else:
+            print(f"{last_speech} has {last_speech.next_speech} assigned instead of {speech}")
+            print(f"{fname}: marking {speech} as next_is_cycled")
+                    
+            speech.next_is_cycled = True
+    
+    #? Previous hierarchy handling (AKA the important stuff)
         
-    if speech.previous_speech is not None:
-        parent = speech.previous_speech
-    else:
-        print(f"{fname}: previous speech is none")
+    if speech.previous_speech is None: #? Considering to be first speech of conversation
+        print(f"{fname}: previous speech is none") 
         
-        if not has_first_speech(conv.id):
+        if not has_first_speech(conv.id): #? If there is no first speech, means this one is indeed the first
             
             print(f"{fname}: No first speeches. Saving")
             
             speech.is_first = True
             speech.save()
             
-            return speech #? mostly just to break the function
-        elif last_speech:
-            
-            if last_speech.id == speech.id: #edit
+            return speech
+        
+        elif last_speech: #? linear creation form should not be obligated to add previous_speech.
+                          #?This prevents any change there not be validated
+                 
+            if last_speech.id == speech.id: #? the prevents a false positive that does not let edit single speech conversations.
                 print(f"{fname} Edit detected:")
-                print(f"last (linear): {last_speech.id}")
-                print(f"submitted:     {speech.id}")
+                print(f"last (linear): {last_speech.id} \n submitted:     {speech.id}")
                 print("------")
                 
                 speech.save()
@@ -272,39 +421,54 @@ def validate_reply(speech):
             
             print(f"{fname}: linear, saving [{speech}] as a reply to [{last_speech}]")
             
-            speech.previous_speech = last_speech
+            speech.previous_speech = last_speech #? correctly fills a previous speech and places it on the end of the line
             speech.save()
             
-            #todo: last_speech.next_speech = speech
-            last_speech.save()
+            if not last_speech.next_speech: #? if conversation is linear and this is empty, it saves there
+                last_speech.next_speech = speech #? this is not necessary for most hierarchies here, but it can be important on .yarn compiling
+                last_speech.save()
             
+            elif last_speech.next_speech == speech:
+                print(f"{fname}: last speech [{last_speech}] already has {speech} assigned as next") #? possible edit?
+                
+                
+            else: #? Consider using the cycle_check function instead.
+                ...
+                
+            speech.save()
             return speech
         else:
             # todo: maybe deal with orphans here?
             msg(f"{fname} Odd scenario, not saving speech")
             
             return False
-    
-    #? Check for other options ------------------------------
+        
+    #? Dealing with non-linear speeches -----------------------------------------------------------------------------
+    elif not linear and speech.previous_speech is None: #it can't index it at all
+        print(f"{fname}: [{speech}] has no previous_speech when {conv} is non-linear conversation.\n Not saving it")
+        return False
+        
+    else:    
+        parent = speech.previous_speech #? Sets up for the rest of the code below
     
     print(f"{fname}: [{speech}] has previous_speech ( {speech.previous_speech})")
     
     forks = Speech.objects.filter(previous_speech=parent)
-    if (forks.count() == 1) and forks.first() is speech:
-        
+    if (forks.count() == 1) and forks.first() is speech: #? Likely an edit detecting itself.
+                                                        #? just because conversation is non-linear, doesn't mean all speeches branch
         print(f"{fname} [{speech}] is being saved")
         speech.save()
         return speech
     
     else: 
-        for fork in forks: #? this could be a single id but this is safer
+        for fork in forks: #? in case the others don't know yet they're a fork, they do now
             fork.is_fork = True
             fork.save()
         
-       # todo:  parent.next_speech = None #? if child wasn't in the loop you have bigger problems
+        parent.next_speech = None #? if child wasn't in the loop you have bigger problems
         parent.has_fork = True #todo: considering this is outdated by now
         
-        #speech.is_fork = True #? for good measure
+        speech.is_fork = True #? for good measure
         conv.is_linear = False #? same here
         
         
@@ -314,3 +478,6 @@ def validate_reply(speech):
     
 
     return speech
+
+def conv_self_check(conv):
+    ...

@@ -165,15 +165,23 @@ class Speech(models.Model):
     
     id = models.CharField(max_length=6, default=uuid.uuid4, unique=True, primary_key=True, editable=False,) # ! The id is the smallest lineIDs on Yarn Spinner don't mention if a limit exists, probably don't
 
+    # ? Major content
     
     txt_en = models.TextField()
     txt_pt = models.TextField(blank=True, null = True)
     txt_es = models.TextField(blank=True, null = True)
     
-        # Every speech is part of a conversation
-        
+    #? Fork questions, only show up if they're forks
+    
+    fq_en = models.TextField(blank=True, null = True)
+    fq_pt = models.TextField(blank=True, null = True)
+    fq_es = models.TextField(blank=True, null = True)
+    
+    
+    
     name = models.CharField(max_length=250, unique=False, null=True) # TODO: Automate the generation of this, with AA, ABA, so on.
     
+    #? Every speech is part of a conversation
     conversation = models.ForeignKey(
         Conversation,
         on_delete=models.PROTECT,
@@ -200,7 +208,6 @@ class Speech(models.Model):
         on_delete = models.PROTECT
     )
     
-    next_is_cycled = models.BooleanField(default=False) 
     #? Speaker
     
     #? Portrait
@@ -209,8 +216,10 @@ class Speech(models.Model):
     #? Status and flags -------------------------
     
     is_first = models.BooleanField(default=False)   # easier to track
-    #? has_fork
-    #? is_fork
+    
+    has_fork = models.BooleanField(default=False)
+    is_fork = models.BooleanField(default=False)
+    next_is_cycled = models.BooleanField(default=False) 
 
 
     #? Localized PT
