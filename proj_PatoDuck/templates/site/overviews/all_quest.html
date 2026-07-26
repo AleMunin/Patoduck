@@ -3,11 +3,13 @@
 
 <h1>{{ view_name }}</h1>
 
-<div class="wrap">
+<section class="wrap columns is-centered">
     <h4>List of all {{ total_quest }} Quests:</h4>
-    {% for quest in quests %}
-        {% include 'site/read/single/single_quest.html' %}    
-    {% endfor %}
-</div>
+    <div class= "column is-half is-centered">
+        {% for quest in quests %}
+            {% include 'site/read/single/single_quest.html' %}    
+        {% endfor %}
+    </div>
+</section>
 
 {% endblock %}

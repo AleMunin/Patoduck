@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
 
 {% block layout %}
+<div class="wrap columns is-centered">
 
-<form method="POST">
-    
-    {% csrf_token %}
-    {{ form.as_p }}
+    <form
+        method="POST"
+        class="column is-4"
+    >
+        
+        {% csrf_token %}
+        {{ form.as_p }}
 
-    <button type="submit"> Edit Location </button>
-    <a href="{{  request.META.HTTP_REFERER }}">Cancel</a>
-</form>
-
+        <button type="submit"> Edit Location </button>
+        <a href="{{  request.META.HTTP_REFERER }}">Cancel</a>
+    </form>
+</div>
 {% endblock %}

@@ -1,13 +1,13 @@
 {# this require the information to be sent as "char", for a single Character object #}
 
-<div class="print-char" id="print_char_{{ char.id }}">
+<article class="print-char" id="print_char_{{ char.id }}">
     <header class="print-char-header">
         <h6> 
             <a href="{% url 'edit_char' char.id %}">  {{ char.name  }}</a>  
         </h6>
         <ul>
-            <li><strong>PT:</strong> {{ char.name_pt }} </li>
-            <li><strong>ES:</strong> {{ char.name_es }} </li>
+            <li><strong>PT: </strong> {{ char.name_pt }} </li>
+            <li><strong>ES: </strong> {{ char.name_es }} </li>
         </ul>
     </header>
 
@@ -17,5 +17,7 @@
         </div>
     {% endif %}
 
-    <div>Insert Modal Button Here</div>
-</div>
+    <div>
+        <p>Insert little description here.</p>
+    </div>
+</article>

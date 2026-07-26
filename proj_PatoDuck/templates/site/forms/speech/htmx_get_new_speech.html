@@ -5,8 +5,11 @@
     class="hx-btn btn-dialogue"
     id = "new_linear_speech_button"
     hx-post="{% url 'get_speech_form' conv.id %}"
-    hx-target="#dialogue_nest"
+    hx-target="#main_modal_content"
     hx-swap="innerHTML"
+    _="on click add [@open] to #main_modal"
 >
     New Speech
 </button>
+
+<!-- original hx-target was "#dialogue_nest"-->

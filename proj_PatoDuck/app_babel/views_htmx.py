@@ -62,7 +62,7 @@ def htmx_get_new_reply_form(request,reply_to_pk):
     context = {
         "form" : form,
         "reply_to_pk" : reply_to.id
-    }
+        }
     return render(request,'site/forms/speech/create_reply.html', context)
 
 
@@ -71,13 +71,16 @@ def htmx_get_edit_speech_form(request,speech_pk):
     print("HTMX Request")
     speech = get_object_or_404(Speech, id=speech_pk)
     
-    sisters = Speech.objects.filter(id=speech.conversation)
+    #sisters = Speech.objects.filter(id=speech.conversation)
     
-    initials={
-        'previous_speech' : sisters
-    }
+    # initials={
+    #     'previous_speech' : sisters
+    # }
     
-    form = SpeechEditForm(instance=speech, initial=initials)
+    #form = SpeechEditForm(instance=speech, initial=initials) #? wth was that? Were u that sleepy?
+    
+    form = SpeechEditForm(instance=speech) 
+
     
     context = {
         'form' : form,
@@ -85,4 +88,41 @@ def htmx_get_edit_speech_form(request,speech_pk):
     }
     
     return render(request,'site/forms/speech/edit_speech.html', context)
+
+def htmx_get_conditional_form(request,conv_pk):
+    htmx("htmx_get_conditional_form")
+    
+    conv = get_object_or_404(Conversation,id=conv_pk)
+    
+    initial_values = {
+            'conversation' : conv,
+            'name' : "!Auto!"
+        }
+    
+    form = ConditionalCreateForm(initial=initial_values)
+    
+    context = {
+        "form" : form,
+        'mode' : 'create'
+        }
+    return render(request,'site/forms/cond/create_cond.html', context)
+
+def htmx_get_edit_conditional_form(request,cond_pk):
+    htmx("htmx_get_edit_conditional_form")
+    
+    conv = get_object_or_404(Conversation,id=conv_pk)
+    cond = get_object_or_404(Conditional,id=cond_pk)
+    
+    initial_values = {
+            'conversation' : conv,
+            'name' : "!Auto!"
+        }
+    
+    form = ConditionalCreateForm(instance=cond)
+    
+    context = {
+        "form" : form,
+        'mode' : 'edit'
+        }
+    return render(request,'site/forms/cond/edit_cond.html', context)
 

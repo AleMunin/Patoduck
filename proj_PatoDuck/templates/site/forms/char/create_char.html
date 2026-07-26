@@ -2,16 +2,16 @@
 {# might remove the extend part for modal #}
 
 {% block layout %}
-<div class="wrap">
+<div class="wrap columns is-centered">
 
     <h4> Create Character </h4>
-    <form method="POST">
+    <form method="POST" class="column is-4">
         
         {% csrf_token %}
         
         {{ form.non_field_errors }}
 
-        <div class="field char_name">
+        <div class="field border label char_name">
             {{ form.name.errors }}
             <label>
                 Character Name: 
@@ -19,7 +19,7 @@
             {{ form.name }}
         </div>
 
-        <div class="field char_name">
+        <div class="field border label char_name">
             {{ form.name_pt.errors }}
             <label>
                 Character Name (PT): 
@@ -27,7 +27,7 @@
             {{ form.name_pt }}
         </div>
 
-        <div class="field char_name">
+        <div class="field border label char_name">
             {{ form.name_es.errors }}
             <label>
                 Character Name (ES): 

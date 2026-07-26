@@ -1,18 +1,28 @@
 {# this require the information to be sent as "quest", for a single questation object #}
 
-<div class="print-quest" id="print_quest_{{ quest.id }}">
+<article class="print-quest" id="print_quest_{{ quest.id }}">
     <header class="print-quest-header">
-        <h6> 
+        <h4> 
             <a href="{% url 'edit_quest' quest.id %}">  {{ quest.title  }}</a>  
-        </h6>
+        </h4>
         <ul>
-            <li><strong>PT:</strong> {{ quest.title_pt }} </li>
-            <li><strong>ES:</strong> {{ quest.title_es }} </li>
+            <li><strong>PT: </strong> {{ quest.title_pt }} </li>
+            <li><strong>ES: </strong> {{ quest.title_es }} </li>
         </ul>
     </header>
 
-    {# Add if it is indoors or not #}
-    <p> {{ quest.description }} </p>
+    <div class="content columns is-centered">
+        <div class="column is-half">
+            <p>Number of steps: {{quest.number_of_steps}} </p>
+            <p>Condition: {{ quest.condition }}</p>
+        </div>
 
-    <div>Insert Modal Button Here</div>
-</div>
+        {# Add if it is indoors or not #}
+        <div class="column is-half">
+            <p> {{ quest.description }} </p>
+            <p> {{ quest.description_pt }} </p>
+            <p> {{ quest.description_es }} </p>
+        </div>
+    </div>
+
+</article>

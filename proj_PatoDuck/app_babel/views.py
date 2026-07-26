@@ -9,6 +9,8 @@ from .forms_create import *
 from .forms_edit import *
 from .validations import *
 from .babel_tools import *
+from .downloads import *
+from .fioyarn import *
 
 def home_view(request):
     """
@@ -37,6 +39,14 @@ def home_view(request):
         "all_convs" : len(convs),
         "all_speeches" : len(speeches)
     }
+
+
+    # ----------- TESTING
+    
+    #db_to_yarn()
+    
+    
+    #----------------
 
     return render(request,'site/home.html', context )
 
@@ -162,9 +172,29 @@ def conversation_create_view(request):
             return redirect("all_conv") # change to edit_conv.
             #redirect to a speech edit with the get method for x talk
     else:
-        form = ConversationCreateForm()
+        initials={
+            "title" : "!Auto!"
+        }
+        form = ConversationCreateForm(initial=initials)
 
     return render(request,'site/forms/conversation/create_conversation.html', {'form' : form })
+
+
+def cond_create_view(request,conv_pk):
+    fname = "\n \033[33m cond_create_view \033[0m"
+    fn_intro(f"cond_create_view")
+    
+    if request.method == 'POST':
+        form = ConditionalCreateForm(request.POST)
+        if form.is_valid():
+            
+            #todo: Validate cond?
+            print(f"{fname}: Form was valid")
+            
+            cond = form.save()
+            context = {'cond' : cond }
+            return render(request,'site/read/single/single_cond.html', context)
+
 
 def speech_create_view(request,conv_pk):
     
@@ -233,7 +263,7 @@ def edit_char_view(request,pk):
     if request.method == 'POST':
         form = CharacterEditForm(request.POST, instance=char)
         if form.is_valid():
-            print("\n\n\ FORM WAS VALID!")
+            print("\n\n FORM WAS VALID!")
             form.save()
             return redirect('all_char')
         else:
@@ -259,6 +289,16 @@ def edit_quest_view(request,pk):
     form = QuestEditForm(instance=quest)
 
     return render(request,'site/forms/quest/edit_quest.html', {'form' : form })
+
+
+def edit_cond_view(request,cond_pk):
+    cond = get_object_or_404(Quest, id=cond_pk)
+
+    if request.method == 'POST':
+        form = ConditionalEditForm(request.POST, instance=cond)
+        if form.is_valid():
+            cond =  form.save()
+            return render(request,'site/single/single_cond.html', {'cond' : cond })
 
 
 

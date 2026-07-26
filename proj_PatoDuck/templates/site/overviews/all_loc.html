@@ -3,11 +3,16 @@
 
 <h1>{{ view_name }}</h1>
 
-<div class="wrap">
-    <h4>List of all {{ total_loc }} Characters:</h4>
-    {% for loc in all_loc %}
-        {% include 'site/read/single/single_loc.html' %}    
-    {% endfor %}
-</div>
+<section class="wrap columns is-centered">
+
+    <h4 class= "title is-4">List of all {{ total_loc }} Characters:</h4>
+    <div class="column is-half is-centered columns is-multiline">
+
+        
+        {% for loc in all_loc %}
+            {% include 'site/read/single/single_loc.html' %}    
+        {% endfor %}
+    </div>
+</section>
 
 {% endblock %}

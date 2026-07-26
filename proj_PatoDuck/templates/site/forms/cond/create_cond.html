@@ -1,0 +1,14 @@
+<form method="POST"
+        _="on htmx:afterRequest remove me"
+        
+        hx-post=    "{% url '' conv_pk %}"
+        hx-target=  "#"
+        hx-swap=    "beforeend"
+        hx-on*:after-request=   "this.reset()">
+    
+    {% csrf_token %}
+    {{ form }}
+
+    <button type="submit"> Submit </button>
+    <a href="{{  request.META.HTTP_REFERER }}">Cancel</a>
+</form>

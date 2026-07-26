@@ -1,7 +1,9 @@
 {# This goes for forks and replies #}
 {# TODO: Move this up one folder #}
 
-<section class="speech">
+<section class="speech
+          column is-8
+">
 
   {% for speech in speeches %}
     {% if speech.name %} {# I am dumb, my nesting list is giving empty items #}
@@ -18,7 +20,7 @@
 
     {% endif %}
     
-    {% if speech|length > 0 %}
+    {% if speech|length > 0 and not speech.next_is_cycled %}
       {% include "site/read/single/loop_speech.html" with speeches=speech %}
     {% endif %}
 

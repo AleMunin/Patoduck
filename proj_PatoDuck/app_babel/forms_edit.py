@@ -1,3 +1,4 @@
+import pprint
 from django.forms import ModelForm
 from django import forms
 from .models import *
@@ -26,6 +27,11 @@ class QuestEditForm(ModelForm):
         ]
     # TODO: You might want to make a link for the conversations later
     
+class ConditionalEditForm(ModelForm):
+    class Meta:
+        model = Conditional
+        fields = '__all__'
+        exclude = ['conversation']
 
 class ConversationEditForm(ModelForm): #edits the conversation, not the speeches
     class Meta:
@@ -81,7 +87,14 @@ class SpeechEditForm(ModelForm):
             
             'name',
             'previous_speech',
-            'next_speech'
+            'next_speech',
+            
+            
+            #todo: do a check to hide those on the template
+            "fq_en",
+            "fq_pt",
+            "fq_es",
+            
         ]
         
         widgets={
@@ -100,9 +113,44 @@ class SpeechEditForm(ModelForm):
                 'cols': 2,
                 'rows': 2, 
             }),
+               
+               
+            #! No god damn idea why col and row aren't respected 
+                
+            #'fn_en': forms.Textarea(attrs={
+            #    'class': 'form-fork_question-field',
+            #    'cols': 2,
+            #    'rows': 2, 
+            #}),
+            
+            'fq_en' : forms.Select(attrs={
+                'cols': 2,
+                'rows': 1, 
+            }),
+            
+            'fq_pt' : forms.Select(attrs={
+                'cols': 2,
+                'rows': 1, 
+            }),
+            
+            'fq_es' : forms.Select(attrs={
+                'cols': 2,
+                'rows': 1, 
+            }),
+            
                 # 'previous_speech': forms.ModelChoiceField(
                 #     queryset=Speech.objects.filter()
                 # )
         }
         
+    def __init__(self, *args, **kwargs): #? filter the speeches to the same conversation
+        # I hate doign this but it needs to be done on runtime, not on the models.py =/        
+        speech = kwargs['instance']
+        conv = speech.conversation
+        super().__init__(*args, **kwargs)    # Here I pretend to understand the initialization of form
         
+        if (speeches := Speech.objects.filter(conversation=conv).exclude(id=speech.id)):
+                        #? don't try to be clever and just exclude "speech", it won't work
+            #todo: filter deleted ones too
+            self.fields['previous_speech'].queryset = speeches #this is the select form
+            self.fields['next_speech'].queryset = speeches

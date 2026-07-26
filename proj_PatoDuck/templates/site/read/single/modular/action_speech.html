@@ -1,3 +1,5 @@
+<!--TODO: Add buttons to reopen modals without using htmx -->
+
 <div class="speech-edit_form" 
     id="form_wrap_{{ speech.id }}" 
 >
@@ -14,11 +16,13 @@
         class="btn btn-show btn-htmx"
         hx-swap = "innerHTML"
         hx-post="{% url 'get_speech_edit_form' speech.id %}"
-        
-        hx-target= "#form_wrap_{{ speech.id }}"
-        _=""
+        hx-target="#edit_speech_{{ speech.id }}"
+       
+        _="on click add [@open] to #edit_speech_dialog_{{ speech.id }}"
     >           Edit
-            {# Add hyperscript to toggle classes #}
+
+    <!-- og target is  hx-target= "#form_wrap_{{ speech.id }}" -->
+    {# Add hyperscript to toggle classes #}
     </button>
 
     <button
@@ -26,9 +30,10 @@
         hx-swap = "afterend"
         hx-post="{% url 'get_speech_reply_form' speech.id %}"
 
-        hx-target="#speech-{{ speech.id }}"
-        _=""
+        hx-target="#edit_reply_content_{{ speech.id}}"
+        _="on click add [@open] to #edit_forks_dialog_{{ speech.id }}"
     >
+    <!-- og ws hx-target="#speech-{{ speech.id }}" -->
         Reply
     </button>
 
@@ -42,9 +47,56 @@
 
 </div>
 
+<dialog id="edit_speech_dialog_{{ speech.id }}">
+    <!-- This is for ediiting the speech only-->
+
+    <article>
+        <header>
+          <button
+              aria-label="Close" 
+              rel="prev"
+              _="on click remove [@open] from #edit_speech_dialog_{{ speech.id }}"   
+          >    
+          </button>
+          <h5> Main Modal</h5>
+        </header>
+
+        <section id="edit_speech_{{ speech.id }}">
+
+          <p>No content was called on the modal yet</p>
+        </section>
+
+      </article>
+</dialog>
+
+<dialog id="edit_forks_dialog_{{ speech.id }}"
+        class="speech-modal">
+        <article>
+            <header>
+              <button
+                  aria-label="Close" 
+                  rel="prev"
+                  _="on click remove [@open] from #edit_forks_dialog_{{ speech.id }}"   
+              >    
+              </button>
+              <h5> Replies Modal </h5>
+            </header>
+  
+            <section id="edit_reply_content_{{ speech.id}}">
+  
+              <p>No content was called on the modal yet</p>
+            </section>
+  
+          </article>
+
+        <!-- Use this for the forks -->
+</dialog>
+
 <div class="speech-reply_form hidden"
     id="form_replyto_{{ speech.id}}"
 >
+
+<!-- Check if you still need this, if so add that to the dialogs instead-->
 
 </div>
 

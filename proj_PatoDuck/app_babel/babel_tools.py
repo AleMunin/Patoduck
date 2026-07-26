@@ -67,8 +67,6 @@ def obj_check():
     ...
 
 
-def conv_create_name(conv):
-    ... # basically if conv has a quest, so on.
 
 # TODO: Test this on the new code
 
@@ -96,6 +94,46 @@ def speech_create_name(obj=None,model_type=None): # create names for speeches
 
     ...
     
+def validate_conv_name(conv):
+    #? This is mostly a convention enforcer for convenience rather than actual validation
+    
+    nameless_token = "N@meless Conv"
+    questless_token = "Qüestless"
+    fname = "\n \033[33m conv create name\033[0m"
+
+    if "!Auto!" in conv.name:
+        
+        if conv.is_quest:
+            if not conv.quest:
+                print(f"{fname}:Could not find quest, good luck; finding it if it had any")
+                
+                num = Conversation.objects.filter(title__contains=questless_token).count()
+                conv.title = f"{questless_token} ({num})"
+                conv.is_quest = False
+                
+                print(f"{fname}: Conversation is now called {conv.title}")
+                
+                
+            elif quest_step == 0:
+                
+                siblings = Conversation.objects.filter(quest=conv.quest)
+                num = siblings.count()
+                conv.title = f"{conv.quest.title} - Part ({num})"
+                
+                print(f"{fname}: Conversation is now called {conv.title}")
+        else:
+            if nameless_token in conv.title:
+                print(f"{fname}: this already is a nameless function, you should change that! u.ú")
+            else:
+                nameless_list = Conversation.objects.filter(title__contains=nameless_token)
+                conv.title = f"{nameless_token} [{nameless_list.count()}]"
+        #todo: if you want to go overboard, query characters on possible speeches lol
+        
+    else: #? database has name marked as unique, so you don't need to worry
+        print(f"{fname}: Conversation already has a name ({conv.title}")
+    
+    return conv.save()
+
 def create_speech_name(conv,reply_to=None): # create names for speeches
     if reply_to is not None: #? careful, this can break
         num = 0 + Speech.objects.filter(previous_speech=reply_to).count()
@@ -103,7 +141,7 @@ def create_speech_name(conv,reply_to=None): # create names for speeches
         
     elif conv.is_linear: #? careful: replies can happen before conv is marked as non-linear
         letter = ascii_uppercase [ Speech.objects.filter(conversation=conv.id).count() ]
-        name = f"{conv.title} — {letter}"
+        name = f"{letter}"
         
     else:
         
@@ -389,11 +427,12 @@ def validate_reply(speech, distrust_conv = False):
             print(f"{fname}: {speech} and {speech.next_speech} reference each other")
             speech.next_is_cycled = False #? seems redundant but edits can change this value
         else:
-            print(f"{last_speech} has {last_speech.next_speech} assigned instead of {speech}")
+            print(f"{speech.previous_speech} has {speech.next_speech.previous_speech} assigned instead of {speech}")
             print(f"{fname}: marking {speech} as next_is_cycled")
                     
             speech.next_is_cycled = True
-    
+            #todo create a field for the next_speech that is marked as "is_merge" or something
+            
     #? Previous hierarchy handling (AKA the important stuff)
         
     if speech.previous_speech is None: #? Considering to be first speech of conversation
@@ -447,8 +486,8 @@ def validate_reply(speech, distrust_conv = False):
     elif not linear and speech.previous_speech is None: #it can't index it at all
         print(f"{fname}: [{speech}] has no previous_speech when {conv} is non-linear conversation.\n Not saving it")
         return False
-        
-    else:    
+            
+    else:
         parent = speech.previous_speech #? Sets up for the rest of the code below
     
     print(f"{fname}: [{speech}] has previous_speech ( {speech.previous_speech})")
@@ -458,6 +497,8 @@ def validate_reply(speech, distrust_conv = False):
                                                         #? just because conversation is non-linear, doesn't mean all speeches branch
         print(f"{fname} [{speech}] is being saved")
         speech.save()
+        parent.next_speech = speech #? this is triggered also on conversations self.checks
+        parent.save()
         return speech
     
     else: 

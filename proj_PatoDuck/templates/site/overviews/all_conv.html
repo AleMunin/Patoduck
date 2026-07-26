@@ -3,11 +3,14 @@
 
 <h1>{{ view_name }}</h1>
 
-<div class="wrap">
-    <h4>List of all {{ total_conv }} Conversations:</h4>
-    {% for conv in all_conv %}
-        {% include 'site/read/single/single_conv.html' %}    
-    {% endfor %}
-</div>
+<section class="wrap columns is-centered">
+    <h4 class="title is-4">List of all {{ total_conv }} Conversations:</h4>
+    <div class="column is-half is-centered columns is-multiline">
+            
+            {% for conv in all_conv %}
+                {% include 'site/read/single/single_conv.html' %}
+            {% endfor %}
+    </div>
+</section>
 
 {% endblock %}

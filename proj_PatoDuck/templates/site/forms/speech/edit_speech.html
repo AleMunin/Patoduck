@@ -3,15 +3,18 @@
 {# Carol se você tá lendo isso, vê se isso facilita tua vida https://picocss.com/docs/modal #}
 
 <div class="could-be-modal">
-    <form method="POST"
+    <form 
+        method="POST"
         id = "edit_speech_form_{{ speech_pk }}"
         class=""
         
         hx-post=    "{% url 'edit_speech' speech_pk %}"
         hx-target=  "#speech-{{ speech_pk }}"
-        hx-swap=    "beforeend"
+        hx-swap=    "outerHTML"
 
-        _="on htmx:afterRequest remove me"
+        _="on htmx:afterRequest remove me
+            on htmx:afterRequest remove [@open] from #main_modal
+        "
     >
     
         {% csrf_token %}

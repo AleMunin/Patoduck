@@ -45,6 +45,12 @@ class LocationCreateForm(ModelForm):
         model = Location
         fields = '__all__'
         
+class ConditionalCreateForm(ModelForm):
+    class Meta:
+        model = Conditional
+        fields = '__all__'
+        
+        
 class ConversationCreateForm(ModelForm):
     
     
@@ -98,10 +104,11 @@ class SpeechCreateForm(ModelForm):
             "conversation"
         ]
         
-        # exclude = [
-        #     'is_first',
-        #     'previous_speech',
-        # ]
+        # fieldsets = (
+            
+        # )# fieldset ends
+
+
         widgets = {
             'txt_en' : forms.Textarea(attrs={
                 'class': 'form-field',
@@ -122,13 +129,30 @@ class SpeechCreateForm(ModelForm):
             }),
                 
             'conversation' : forms.Select(attrs={
-               # 'readonly': 'readonly',
+               # 'readonly': 'readonly', #somehow not working, leave it commented
                 'class' : 'hidden'
+                #? Instead of hidden you can filter it on the __init__ to only the conv
             })
                 
             
             
         }
+    #! DO NOT UNCOMMENT THIS unless:
+    #? You start dealing with prev/next speech
+    #? I am keeping this here so you don't need to go hunt on other forms if you do
+        
+    #
+    # def __init__(self, *args, **kwargs): #? filter the speeches to the same conversation
+    #     # I hate doign this but it needs to be done on runtime, not on the models.py =/        
+    #     speech = kwargs['instance']
+    #     conv = speech.conversation
+    #     super().__init__(*args, **kwargs)    # Here I pretend to understand the initialization of form
+        
+    #     if (speeches := Speech.objects.filter(conversation=conv).exclude(id=speech.id)):
+    #                     #? don't try to be clever and just exclude "speech", it won't work
+    #         #todo: filter deleted ones too
+    #         self.fields['previous_speech'].queryset = speeches #this is the select form
+    #         self.fields['next_speech'].queryset = speeches
                 
    
 class ReplyCreateForm(ModelForm):
@@ -146,8 +170,39 @@ class ReplyCreateForm(ModelForm):
             "txt_pt",
             "txt_es",
             "conversation",
-            "previous_speech",
+            "previous_speech", #! Obligatory
+            
+            "fq_en",
+            "fq_pt",
+            "fq_es",
+            
         ]
+        
+        
+        fieldsets = (
+            ("Main:", {
+                'fields' : ('txt_en','txt_pt','txt_es'),
+                'classes' : ('main-field'),
+                'description' : "The Speech actually said",
+                }
+            ),
+            ("Fork Question:", {
+                'fields' : ('fq_en','fq_pt','fq_es'),
+                'classes' : ('fork-questions'),
+                'description' : "What option leads to it",
+                }
+            ),
+            
+            ("Dialogue Data:", {
+                'fields' : ('previous_speech','next_speech','conversation'),
+                'classes' : ('order-selection hidden'),
+                'description' : "Where it is in relation ot other speeches",
+                }
+            ),
+                
+        )# fieldset ends
+
+        
         
         widgets = {
             'txt_en' : forms.Textarea(attrs={
@@ -176,6 +231,22 @@ class ReplyCreateForm(ModelForm):
             'previous_speech' : forms.Select(attrs={
                # 'readonly': 'readonly',
                 'class' : 'hidden'
-            })
-        }
-     
+            }),
+            
+            'fq_en' : forms.Select(attrs={
+                'cols': 2,
+                'rows': 1, 
+            }),
+            
+            'fq_pt' : forms.Select(attrs={
+                'cols': 2,
+                'rows': 1, 
+            }),
+            
+            'fq_es' : forms.Select(attrs={
+                'cols': 2,
+                'rows': 1, 
+            }),
+            
+            
+        } #widget ends

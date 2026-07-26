@@ -1,33 +1,52 @@
 {% extends 'base.html' %}
 
 {% block layout %}
-<div id="wrap_conv" class="conv_wrapper wrapper">
+<div 
+    id="wrap_conv"
+    class= "conv_wrapper wrapper
+            columns is-centered is-multiline">
+    <nav 
+        class="column is-12"
+        
+        >
+        <button
+            class= "btn-edit"
+            _="on click 
+                toggle .hidden on #edit_mode_conv
+                toggle .hidden on #read_mode_conv"
+        >
+                Edit Conversation
+        </button>
+        <button class="secondary">
+            <a href="{% url 'all_conv' %}"> Return to all Conversations </a>
+        </button>
+    </nav>
 
-    <button
-    class= "btn-edit"
-    _="on click 
-        toggle .hidden on #edit_mode_conv
-        toggle .hidden on #read_mode_conv"
-    >
-        Edit Conversation
-    </button>
 
-    <div id="read_mode_conv" class=conv_print>
+    <div
+        id="read_mode_conv"
+        class="conv_print column is-8">
 
         {% include 'site/read/single/single_conv.html' %}
         {# this will likely need a single more complex #}
     </div>
 
 
-    <form id="edit_mode_conv" class="hidden conv_edit" method = "post">
+    <form
+        method = "post"
+        id="edit_mode_conv"
+        class="hidden conv_edit column is-4" 
+    >
         {% csrf_token %}
         {{ conv_form }}
         <button type="submit">Save Changes </button>
     </form>
 
-    <a href="{% url 'all_conv' %}"> Return to all Conversations </a>
-
+    
 </div>
+
+
+<!-- -------------------------   -->
 
 <div>
     <h4>Create Speech
@@ -36,14 +55,31 @@
     </h4>
 </div>
 
+<div id = "conditions_wrap">
+    <h6> Conditions </h6>
+    
+    {% for cond in conds %}
+        {% include "site/read/single/single_cond.html" %}
+    {% endfor %}
 
-<div id = "all_conv_wrapp">
-    <h1>Speech tests</h1>
+    <button>Create Conditional (WIP)</button>
+</div>
+
+
+<div id = "all_conv_wrapp"
+    class = "columns is-multiline is-centered"
+>
+    <header class="column is-half" >
+        <h1 class="title is-2">Speech tests</h1>
+    </header>       
+
 
     {% include "site/read/single/loop_speech.html" with speeches=speeches %}
    
     {% if conv.is_linear %}
-        {% include 'site/forms/speech/htmx_get_new_speech.html' %} -->
+    <footer class="column is-12" >
+        {% include 'site/forms/speech/htmx_get_new_speech.html' %}
+    </footer>
     {% endif %}
 </div>
 

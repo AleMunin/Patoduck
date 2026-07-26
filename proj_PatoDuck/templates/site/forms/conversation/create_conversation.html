@@ -3,7 +3,12 @@
 
 {% block layout %}
 
-<form method="POST">
+<div class="wrap columns is-centered">
+
+    <form
+        method="POST"
+        class="column is-4"
+    >
     
     {% csrf_token %}
     {{ form.as_p }}
@@ -11,5 +16,7 @@
     <button type="submit"> Submit Conversation</button>
     <a href="{{  request.META.HTTP_REFERER }}">Cancel</a>
 </form>
+
+</div>
 
 {% endblock %}

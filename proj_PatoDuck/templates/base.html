@@ -16,6 +16,33 @@
     {% block layout %}
 
     {% endblock %}
-    
+    <button
+        _="on click add [@open] to #main_modal"
+    >
+        Reopen last Modal
+    </button>
+
+
+    <dialog 
+        id = "main_modal">
+        <article>
+          <header>
+            <button
+                aria-label="Close" 
+                rel="prev"
+                _="on click remove [@open] from #main_modal"   
+            >    
+            </button>
+            <h5> Main Modal</h5>
+          </header>
+
+          <section id="main_modal_content">
+
+            <p>No content was called on the modal yet</p>
+          </section>
+
+        </article>
+      </dialog>
+
 </body>
 </html>

@@ -16,25 +16,25 @@
     
 
     {% if speech.is_fork %}
-    <div class= "speech-print-question">
+    <ul class= "speech-print-question">
         <h6>Fork Question:</h6>
-        <p class="txt txt-en"> <strong>EN:</strong>  {{ speech.fq_en }}  </p>
-        <p class="txt txt-pt"> <strong>PT:</strong>  {{ speech.fq_pt }}  </p>
-        <p class="txt txt-es"> <strong>ES:</strong>  {{ speech.fq_es}}  </p>
-    </div>
+        <li class="txt txt-en"> <strong>EN:</strong>  {{ speech.fq_en }}  </li>
+        <li class="txt txt-pt"> <strong>PT:</strong>  {{ speech.fq_pt }}  </li>
+        <li class="txt txt-es"> <strong>ES:</strong>  {{ speech.fq_es}}  </li>
+    </ul>
     {% endif %}
 
 
-    <div class = "language_wrap wrap">
+    <ul class = "language_wrap wrap">
         
         {# Here is the core part of speeches #}
         <h6>Speech:</h6>
         {# Add Fork Question here too #}
-        <p class="txt txt-en"> <strong>EN:</strong>  {{ speech.txt_en }}  </p>
-        <p class="txt txt-pt"> <strong>PT:</strong>  {{ speech.txt_pt }}  </p>
-        <p class="txt txt-es"> <strong>ES:</strong>  {{ speech.txt_es }}  </p>
+        <li class="txt txt-en"> <strong>EN:</strong>  {{ speech.txt_en }}  </li>
+        <li class="txt txt-pt"> <strong>PT:</strong>  {{ speech.txt_pt }}  </li>
+        <li class="txt txt-es"> <strong>ES:</strong>  {{ speech.txt_es }}  </li>
 
-    </div>
+    </ul>
 
 </div>
 
@@ -55,29 +55,35 @@
 </div>
 
 
-<footer class = "speech-footer-data">
+<div class = " speech-footer-data">
     {# Will put some of those on the header instead#}
-    <nav>
+    <nav class="columns is-multiline">
         
         {% if not speech.previous_speech %}
-        <div>
-            No previous speeches
+        <div class="column is-half previous_nav">
+            <p>No previous speeches</p>
         </div>
         {% else %}
-        <div>
+        <div class="column is-half previous_nav">
             <strong>Previous Speech:</strong>            
             <a  href="#speech-{{ speech.previous_speech.id }}"> {{ speech.previous_speech }} </a>
         </div>
         {% endif %}
 
-        <ul><h6>Replies:</h6>
+
+        <div class="column is-half next_nav">
+
             {% if speech.next_speech %}
 
-            <strong>Main Next Speech:</strong>            
-            <a  href="#speech-{{ speech.next_speech.id }}"> {{ speech.next_speech }} </a>
+            <p><strong>Main Next Speech: </strong> </p>
+            <p>           
+                <a  href="#speech-{{ speech.next_speech.id }}"> {{ speech.next_speech }} </a>
+            </p>
             {% endif %}
 
             {% if speech.has_fork %}
+            <h6 class="title is-6">Replies:</h6>
+        
             <ul>
                 {% for fork in speech.replies.all %}
                 <li>
@@ -86,8 +92,15 @@
                 {% endfor %}
             </ul>
             {% endif %}
-        
-    </nav>
-    <div><strong>Next is Cycled:</strong> {{ speech.next_is_cycled }} </div>
 
-</footer>
+
+        </div>
+        
+        <div class="column is-half is-centered has-text-centered">
+            <p>
+                <strong>Next is Cycled:</strong> {{ speech.next_is_cycled }} 
+            </p>
+        </div>
+    </nav>
+
+</div>

@@ -1,19 +1,51 @@
-<section class = "speech wrap" 
+
+<section
     id="speech-{{ speech.id }}" 
+    
+    class = "speech wrap
+        {% if speech.has_fork %} forked_speech  {% endif %}
+        {% if speech.is_fork %}  is_fork {% endif %}
+        {% if speech.next_is_cycled %}   next_cycled      {% endif %}
+        {# make condition for is_conditional #}
+        {# make condition for merged when you have the field #}
+    " 
 >
 
     {# Maybe move speech-buttons here#}
+    {# maybe add icons to show which each one is based on class #}
 
 
 
-    <div class = "speech-print" id="speech_print{ speech.id }}">
+    <article class = "speech-print" id="speech_print{ speech.id }}">
         {# I know this feels unnecessary but there was too much logic to be applied here #}
         {% include 'site/read/single/modular/print_speech.html' %}
-    </div>
+    </article>
 
 
-    <div class="speech-action">
+    <footer class="speech-action">
         {% include 'site/read/single/modular/action_speech.html' %}
-    </div>
+    </footer>
+    
+    <dialog id="edit_speech_dialog_{{ speech.id }}">
+        <!-- This is for ediiting the speech only-->
+    </dialog>
+
+    <dialog id="edit_forks_{{ speech.id }}"
+            class="speech-modal">
+    
+            <!-- Use this for the forks -->
+
+    </dialog>
+
+    <dialog class="hidden">
+        <!--
+            When you finish debugging stuff you can just make it load here.
+            If you do:
+            - Add hyperscript to target here.
+            - Add a button on footer to reopen dialog if you close it
+            - Preferably make button have a different color so you know it has content unsaved
+        
+        -->
+    </dialog>
     
 </section>

@@ -16,7 +16,7 @@ class Character (models.Model):
     in_game = models.BooleanField(default=False)   # if the character is in the build of the game or not
 
     # ! Database Data
-    id = models.CharField(max_length=16, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    id = models.CharField(max_length=4, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
     def __str__(self):
         return str(self.name)
@@ -70,7 +70,7 @@ class Location (models.Model):
 
     # ! Data for the database
 
-    id = models.CharField(max_length=16, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    id = models.CharField(max_length=5, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
     # if you ever need connections, just create self keys here
 
@@ -85,12 +85,13 @@ class Stage (models.Model):
     
 
 class Quest(models.Model):
-    id = models.CharField(max_length=25, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    id = models.CharField(max_length=5, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
     title = models.CharField(max_length=250, unique=True)
     title_pt = models.CharField(max_length=250, unique=True, null=True, blank=True)
     title_es = models.CharField(max_length=250, unique=True, null=True, blank=True)
 
+    #? won't use this yet, but leaving here in case we do
     description = models.TextField()
     description_pt = models.TextField(null=True,blank=True)
     description_es = models.TextField(null=True,blank=True)
@@ -99,6 +100,7 @@ class Quest(models.Model):
 
     condition = models.TextField(blank=True) # This is just a comment for the user
     
+    #todo: comment that out
     number_of_steps = models.PositiveIntegerField(default=0) #number of conversations it has.
 
     # It is possible to add a foreign key of items you need for the quest
@@ -115,7 +117,7 @@ class Conversation(models.Model):
     description = models.TextField(blank = True, null=True)
 
     #? user status
-    is_quest = models.BooleanField(default=False)   # Practical delimiter
+    is_quest = models.BooleanField(default=False)   # redundant, but Practical delimiter
     is_cutscene = models.BooleanField(default=False)   # Signals if it requires more attention
     in_game = models.BooleanField(default=False)    # If it is already in the build or not.
     
@@ -138,7 +140,7 @@ class Conversation(models.Model):
     )
     
     # ! Database info
-    id = models.CharField(max_length=100, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    id = models.CharField(max_length=8, default=uuid.uuid4, unique=True, primary_key=True, editable=False)
     
     quest_step = models.PositiveIntegerField(default=0) # Number assigned when following a quest.
     # total_speeches = models.PositiveIntegerField(default=0) # Used for accounting for rogue speeches and raising flags, but past me told me it is more trouble than it is worth
@@ -158,7 +160,22 @@ class Conversation(models.Model):
     def __str__(self):
         return str(self.title)
     
+class Conditional(models.Model):
+    
+    id = models.CharField(max_length=4, default=uuid.uuid4, unique=True, primary_key=True, editable=False,)
+    name = models.CharField(max_length=250, unique=False, null=True)
+    
+    comment = models.CharField(max_length=250, unique=False, null=True)
+    
+    double_else = models.BooleanField(default=False) #? Flag for validation error
+    
+    conversation = models.ForeignKey(
+        Conversation,
+        on_delete=models.PROTECT,
+        related_name="conditionals"
+    )
 
+    
 class Speech(models.Model):
 
     # ! Database Info
@@ -179,7 +196,7 @@ class Speech(models.Model):
     
     
     
-    name = models.CharField(max_length=250, unique=False, null=True) # TODO: Automate the generation of this, with AA, ABA, so on.
+    name = models.CharField(max_length=250, unique=False, null=True)
     
     #? Every speech is part of a conversation
     conversation = models.ForeignKey(
@@ -208,7 +225,19 @@ class Speech(models.Model):
         on_delete = models.PROTECT
     )
     
+    conditional = models.ForeignKey(
+        Conditional,
+        blank = True,
+        null=True,
+        related_name="ifs",
+        on_delete = models.PROTECT
+    )
+    
+    
+    
+    
     #? Speaker
+    #! related_name = speaks
     
     #? Portrait
 
@@ -220,8 +249,9 @@ class Speech(models.Model):
     has_fork = models.BooleanField(default=False)
     is_fork = models.BooleanField(default=False)
     next_is_cycled = models.BooleanField(default=False) 
-
-
+    
+    #todo is_cycled = models.BooleanField(default=False) 
+    #todo is_conditional = models.BooleanField(default=False)
     #? Localized PT
     #? Localized ES
     

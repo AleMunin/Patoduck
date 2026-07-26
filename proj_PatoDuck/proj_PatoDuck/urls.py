@@ -38,7 +38,9 @@ urlpatterns = [
     path('create/quest', quest_create_view, name='create_quest'),
     path('create/loc', location_create_view, name="create_location"),
     path('create/conv', conversation_create_view, name='create_conv'),
+    path('create/cond', cond_create_view, name='create_cond'),
     
+
     
     path('create/speech/<conv_pk>', speech_create_view, name='create_speech'),
     path('create/reply/<reply_to_pk>', reply_create_view, name='create_reply'),
@@ -49,13 +51,15 @@ urlpatterns = [
     path('edit/char/<pk>', edit_char_view, name='edit_char' ),
     path('edit/quest/<pk>', edit_quest_view, name='edit_quest' ),
     path('edit/loc/<pk>', edit_loc_view, name='edit_loc' ),
+    path('edit/cond/<pk>', edit_cond_view, name='edit_cond' ),
 
     # HTMX requests
     
     path('forms/new_speech/<conv_pk>', htmx_get_new_speech_form, name = 'get_speech_form'),
     path('forms/edit_speech/<speech_pk>', htmx_get_edit_speech_form, name = 'get_speech_edit_form'),
-    path('forms/new_reply/<reply_to_pk>', htmx_get_new_reply_form, name = 'get_speech_reply_form')
-
+    path('forms/new_reply/<reply_to_pk>', htmx_get_new_reply_form, name = 'get_speech_reply_form'),
+    path('forms/new_cond/<conv_pk>', htmx_get_conditional_form, name = 'get_cond_form'),
+    path('forms/edit_cond/<cond_pk>', htmx_get_edit_conditional_form, name = 'get_cond_edit_form'),
 
 
 

@@ -1,0 +1,30 @@
+{# This is how you call it #}
+
+<!--
+{#% for node in speeches %#}
+  {#% include "site/read/test.html" with node=node %#}
+{#% endfor %#} 
+-->
+
+
+
+{# this goes on the speech  #}
+<div class="node">
+  {# node can be a Speech instance or a [Speech, children_list] list #}
+  {% if node.0 %} {# node is a list like [speech, children] #}
+    <div class="item">{{ node.0.name }}</div>
+    {% with children=node.1 %}
+      {% if children %}
+        <div class="children">
+          {% for child in children %}
+            {% include "site/read/test.html" with node=child %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+  {% else %} {# node is a Speech instance (leaf) #}
+    <div class="item">{{ node.name }}</div>
+  {% endif %}
+</div>
+
+
